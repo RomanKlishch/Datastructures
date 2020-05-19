@@ -1,6 +1,8 @@
 package com.rk.list.ArryaList;
 
 
+import java.util.Arrays;
+
 public class ArrayList<T> {
     private Object[] array;
     private int position = 0;
@@ -99,7 +101,18 @@ public class ArrayList<T> {
     }
 
     public String toString() {
-        return null;
+        if (array == null){
+            return null;
+        }
+        if (position == 0){
+            return "{}";
+        }
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i <position ; i++) {
+            builder.append(array[i]);
+            builder.append(", ");
+        }
+        return "[" +builder+"]";
     }
 //TODO: может как увеличить так и обрезать массив
     private void resize() {

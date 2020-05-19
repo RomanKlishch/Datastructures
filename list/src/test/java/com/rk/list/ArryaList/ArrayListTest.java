@@ -25,7 +25,7 @@ class ArrayListTest {
     @Test
     void add() {
         defaultArrayList.add("rrr");
-        assertEquals("rrr",defaultArrayList.get(defaultArrayList.size()));
+        assertEquals("rrr",defaultArrayList.get(defaultArrayList.size()-1));
     }
 
     @Test
@@ -95,5 +95,10 @@ class ArrayListTest {
     void lastIndexOf() {
         assertEquals(1,defaultArrayList.indexOf("www"));
         assertEquals(-1,defaultArrayList.indexOf("ttt"));
+    }
+
+    @Test
+    void testToString() {
+        assertEquals("[qqq, www, eee, rrr]",defaultArrayList.toString());
     }
 }
