@@ -5,7 +5,7 @@ import java.util.List;
 public class ArrayList<T> {
     private Object[] array;
     private int position = 0;
-   List<String> strings = new java.util.ArrayList<>();
+   
 
     public ArrayList(int startSize) {
         array = new Object[startSize];
@@ -73,16 +73,32 @@ public class ArrayList<T> {
     }
 
     public boolean contains(Object value) {
+        for (int i = 0; i <position ; i++) {
+            if (value.equals(array[i])){
+                return true;
+            }
+        }
         return false;
     }
-
+    //Todo: что должны возращать lastIndexOf и indexOf если value нет в списке?
     public int indexOf(Object value) {
-        return 0;
+        for (int i = 0; i <position ; i++) {
+            if (value.equals(array[i])){
+                return i;
+            }
+        }
+        return -1;
     }
 
     public int lastIndexOf(Object value) {
-        return 0;
+        for (int i = position-1; i == 0 ; i--) {
+            if (value.equals(array[i])){
+                return i;
+            }
+        }
+        return -1;
     }
+
 
     public String toString() {
         return null;

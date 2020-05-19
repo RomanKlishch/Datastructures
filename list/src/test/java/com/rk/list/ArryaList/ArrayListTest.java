@@ -81,10 +81,14 @@ class ArrayListTest {
 
     @Test
     void contains() {
+        assertFalse(defaultArrayList.contains("ttt"));
+        assertTrue(defaultArrayList.contains("qqq"));
     }
 
     @Test
     void indexOf() {
+        assertEquals(1,defaultArrayList.indexOf("www"));
+        assertEquals(-1,defaultArrayList.indexOf("ttt"));
     }
 
     @Test
