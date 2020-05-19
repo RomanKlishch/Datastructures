@@ -1,11 +1,10 @@
 package com.rk.list.ArryaList;
 
-import java.util.List;
 
 public class ArrayList<T> {
     private Object[] array;
     private int position = 0;
-   
+
 
     public ArrayList(int startSize) {
         array = new Object[startSize];

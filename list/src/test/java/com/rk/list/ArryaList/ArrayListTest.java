@@ -93,5 +93,7 @@ class ArrayListTest {
 
     @Test
     void lastIndexOf() {
+        assertEquals(1,defaultArrayList.indexOf("www"));
+        assertEquals(-1,defaultArrayList.indexOf("ttt"));
     }
 }
