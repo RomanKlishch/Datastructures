@@ -38,6 +38,7 @@ public class ArrayList<T> {
         }
         Object obj = array[index];
         System.arraycopy(array,index+1,array,index,position-index);
+        position--;
         return obj;
     }
 
@@ -68,7 +69,7 @@ public class ArrayList<T> {
     }
 
     public boolean isEmpty() {
-        return position==0;
+        return position == 0;
     }
 
     public boolean contains(Object value) {
