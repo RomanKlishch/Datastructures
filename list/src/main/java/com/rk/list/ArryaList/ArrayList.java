@@ -79,7 +79,7 @@ public class ArrayList<T> {
         }
         return false;
     }
-    //Todo: что должны возращать lastIndexOf и indexOf если value нет в списке?
+//Todo: что должны возращать lastIndexOf и indexOf если value нет в списке?
     public int indexOf(Object value) {
         for (int i = 0; i <position ; i++) {
             if (value.equals(array[i])){
@@ -97,7 +97,6 @@ public class ArrayList<T> {
         }
         return -1;
     }
-
 
     public String toString() {
         return null;
