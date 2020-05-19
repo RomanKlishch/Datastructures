@@ -60,12 +60,11 @@ class ArrayListTest {
         defaultArrayList.set("sss",2);
         assertEquals("sss",defaultArrayList.get(2));
     }
-
+    //TODO: как правильно проверить clear() ?
     @Test
     void clear() {
         defaultArrayList.clear();
         assertEquals(0,defaultArrayList.size());
-        //TODO: как правильно проверить ?
     }
 
     @Test
