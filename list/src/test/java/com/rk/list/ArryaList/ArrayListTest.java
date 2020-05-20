@@ -6,11 +6,9 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
 class ArrayListTest {
 
     private ArrayList<String> defaultArrayList;
-
 
     @BeforeEach
     public void each(){
@@ -60,7 +58,7 @@ class ArrayListTest {
         defaultArrayList.set("sss",2);
         assertEquals("sss",defaultArrayList.get(2));
     }
-    //TODO: как правильно проверить clear() ?
+
     @Test
     void clear() {
         defaultArrayList.clear();
@@ -99,5 +97,6 @@ class ArrayListTest {
     @Test
     void testToString() {
         assertEquals("[qqq, www, eee, rrr]",defaultArrayList.toString());
+        assertEquals("[]",new ArrayList<String>().toString());
     }
 }

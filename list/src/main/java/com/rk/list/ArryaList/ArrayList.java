@@ -3,7 +3,7 @@ package com.rk.list.ArryaList;
 public class ArrayList<T> {
     private Object[] array;
     private int position = 0;
-
+    private int capacity = 2;
 
     public ArrayList(int startSize) {
         array = new Object[startSize];
@@ -17,6 +17,7 @@ public class ArrayList<T> {
         checkSize();
         array[position++] = value;
     }
+
 //TODO: можно добавить еще два условия if(position== array.length-1) и if(position< array.length-1)
 // тогда на один System.arraycopy в случае переполнения массива будет меньше;
     public void add(T value, int index) {
@@ -53,6 +54,7 @@ public class ArrayList<T> {
         return array[index]=value;
     }
 
+//TODO: заполняю массив null для того что бы garbage collector мог почистить память.
     public void clear() {
         position = 0;
         resize();
@@ -77,6 +79,7 @@ public class ArrayList<T> {
         }
         return false;
     }
+
 //Todo: что должны возращать lastIndexOf и indexOf если value нет в списке?
     public int indexOf(Object value) {
         for (int i = 0; i <position ; i++) {
@@ -95,37 +98,40 @@ public class ArrayList<T> {
         }
         return -1;
     }
+
     @Override
     public String toString() {
-        if (array == null){
-            return null;
-        }
-        if (position == 0){
-            return "{}";
-        }
-        StringBuilder builder = new StringBuilder();
-        builder.append('[');
-        for (int i = 0; i <position ; i++) {
-            if (i==position-1){
+        if (position>0) {
+            StringBuilder builder = new StringBuilder();
+            builder.append('[');
+            for (int i = 0; i < position; i++) {
+                if (i == position - 1) {
+                    builder.append(array[i]);
+                    return builder + "]";
+                }
                 builder.append(array[i]);
-                return builder+"]";
+                builder.append(", ");
             }
-            builder.append(array[i]);
-            builder.append(", ");
         }
-        return null;
+       return "[]";
     }
+
 //TODO: может как увеличить так и обрезать массив
+//TODO: наверное нужно настроить на какое-то определеное урезания массива,
+//      а не до прказателя position
     private void resize() {
-        Object[] newArray = new Object[(position+1)*2];
+        Object[] newArray = new Object[(position+1)*capacity];
         System.arraycopy(this.array,0,newArray,0,position);
         this.array = newArray;
     }
-//TODO: наверное нужно настроить на какое-то определеное урезания массива,
-//      а не до прказателя position
+
     private void checkSize(){
         if (position==array.length-1){
             resize();
         }
+    }
+
+    public void setCapacity(int capacity) {
+        this.capacity = capacity;
     }
 }
