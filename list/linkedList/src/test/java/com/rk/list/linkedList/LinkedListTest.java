@@ -16,25 +16,27 @@ class LinkedListTest {
         defaultList.add("www");
         defaultList.add("eee");
         defaultList.add("rrr");
+        defaultList.add("ttt");
+        defaultList.add("yyy");
+        defaultList.add("uuu");
 
     }
 
-
     @Test
     void size() {
-        assertEquals(4, defaultList.size());
+        assertEquals(7, defaultList.size());
     }
 
     @Test
     void add() {
        defaultList.add("sss");
-       assertEquals(5,defaultList.size());
+       assertEquals(8,defaultList.size());
     }
 
     @Test
     void testAdd() {
         defaultList.add(4,"ssss");
-        assertEquals(5,defaultList.size());
+        assertEquals(8,defaultList.size());
         assertEquals("ssss",defaultList.get(4));
     }
 
@@ -44,7 +46,8 @@ class LinkedListTest {
 
     @Test
     void get() {
-        assertEquals("rrr",defaultList.get(3));
+        assertEquals("www",defaultList.get(1));
+        assertEquals("uuu",defaultList.get(6));
     }
 
     @Test

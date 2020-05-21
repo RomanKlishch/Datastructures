@@ -27,7 +27,7 @@ public class LinkedList<T> implements Iterable<T> {
         size++;
     }
 
-    //TODO: как это сделать используя Stream.iterate()?
+    //TODO: как сделать Stream<Node> используя Stream.iterate()?
     public void add(int index, T element) {
         checkIndex(index);
         Node<T> iterationNode = tail;
@@ -40,12 +40,12 @@ public class LinkedList<T> implements Iterable<T> {
         }
 
         if (index > 0) {
-            for (int i = 0; i <index-1; i++) {
+            for (int i = 0; i < index - 1; i++) {
                 iterationNode = iterationNode.getNext();
             }
             newNode.setPrev(iterationNode);
             newNode.setNext(iterationNode.getNext());
-            if(index<size){
+            if (index < size) {
                 iterationNode.getNext().setPrev(newNode);
             }
             iterationNode.setNext(newNode);
@@ -54,14 +54,25 @@ public class LinkedList<T> implements Iterable<T> {
     }
 
     public T remove(int index) {
+
         return null;
     }
 
     public T get(int index) {
         checkIndex(index);
-        Node<T> iterationNode = tail;
-        for (int i = 0; i <index ; i++) {
-            iterationNode = iterationNode.getNext();
+        Node<T> iterationNode = null;
+
+        if (index < size / 2) {
+            iterationNode = tail;
+            for (int i = 0; i < index; i++) {
+                iterationNode = iterationNode.getNext();
+            }
+        }
+        if (index > size / 2) {
+            iterationNode = head;
+            for (int i = size-1; i > index ; i--) {
+                iterationNode = iterationNode.getPrev();
+            }
         }
         return iterationNode.getValue();
     }
