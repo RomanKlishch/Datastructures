@@ -30,7 +30,6 @@ public class LinkedList<T> implements Iterable<T> {
     //TODO: как сделать Stream<Node> используя Stream.iterate()?
     public void add(int index, T element) {
         checkIndex(index);
-        Node<T> iterationNode = tail;
         Node<T> newNode = new Node<>(element);
 
         if (index == 0) {
@@ -40,7 +39,7 @@ public class LinkedList<T> implements Iterable<T> {
         }
 
         if (index > 0) {
-            iterationNode = getNode(index);
+            Node<T>  iterationNode = getNode(index);
             iterationNode.getPrev().setNext(newNode);
             newNode.setPrev(iterationNode.getPrev());
             newNode.setNext(iterationNode);
@@ -50,8 +49,18 @@ public class LinkedList<T> implements Iterable<T> {
     }
 
     public T remove(int index) {
-
-        return null;
+        checkIndex(index);
+        Node<T>  iterationNode = getNode(index);
+        if (index == 0) {
+          iterationNode.getNext().setPrev(null);
+          tail = iterationNode.getNext();
+        }
+        if (index>0){
+            iterationNode.getPrev().setNext(iterationNode.getNext());
+            iterationNode.getNext().setPrev(iterationNode.getPrev());
+        }
+        size--;
+        return iterationNode.getValue();
     }
 
     public T get(int index) {
@@ -59,8 +68,6 @@ public class LinkedList<T> implements Iterable<T> {
         Node<T> iterationNode = getNode(index);
         return iterationNode.getValue();
     }
-
-
 
     public T set(int index, T element) {
         Node<T> newNode = getNode(index);

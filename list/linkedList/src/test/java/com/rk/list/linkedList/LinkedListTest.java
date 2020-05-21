@@ -42,7 +42,9 @@ class LinkedListTest {
 
     @Test
     void remove() {
+        defaultList.remove(0);
         assertNotEquals("qqq",defaultList.get(0));
+        assertEquals("www",defaultList.get(0));
         assertEquals(5,defaultList.size());
     }
 
@@ -54,6 +56,8 @@ class LinkedListTest {
 
     @Test
     void set() {
+        defaultList.set(1,"aaa");
+        assertEquals("aaa",defaultList.get(1));
     }
 
     @Test
