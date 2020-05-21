@@ -40,15 +40,11 @@ public class LinkedList<T> implements Iterable<T> {
         }
 
         if (index > 0) {
-            for (int i = 0; i < index - 1; i++) {
-                iterationNode = iterationNode.getNext();
-            }
-            newNode.setPrev(iterationNode);
-            newNode.setNext(iterationNode.getNext());
-            if (index < size) {
-                iterationNode.getNext().setPrev(newNode);
-            }
-            iterationNode.setNext(newNode);
+            iterationNode = getNode(index);
+            iterationNode.getPrev().setNext(newNode);
+            newNode.setPrev(iterationNode.getPrev());
+            newNode.setNext(iterationNode);
+            iterationNode.setPrev(newNode);
         }
         size++;
     }
@@ -60,25 +56,16 @@ public class LinkedList<T> implements Iterable<T> {
 
     public T get(int index) {
         checkIndex(index);
-        Node<T> iterationNode = null;
-
-        if (index < size / 2) {
-            iterationNode = tail;
-            for (int i = 0; i < index; i++) {
-                iterationNode = iterationNode.getNext();
-            }
-        }
-        if (index > size / 2) {
-            iterationNode = head;
-            for (int i = size-1; i > index ; i--) {
-                iterationNode = iterationNode.getPrev();
-            }
-        }
+        Node<T> iterationNode = getNode(index);
         return iterationNode.getValue();
     }
 
+
+
     public T set(int index, T element) {
-        return null;
+        Node<T> newNode = getNode(index);
+        newNode.setValue(element);
+        return  newNode.getValue();
     }
 
     public int indexOf(Object o) {
@@ -134,6 +121,23 @@ public class LinkedList<T> implements Iterable<T> {
         if (index > size) {
             throw new IndexOutOfBoundsException();
         }
+    }
+
+    private Node<T> getNode(int index) {
+        Node<T> iterationNode = null;
+        if (index <= size / 2) {
+            iterationNode = tail;
+            for (int i = 0; i < index; i++) {
+                iterationNode = iterationNode.getNext();
+            }
+        }
+        if (index > size / 2) {
+            iterationNode = head;
+            for (int i = size-1; i > index ; i--) {
+                iterationNode = iterationNode.getPrev();
+            }
+        }
+        return iterationNode;
     }
 
     private class Node<E> {
