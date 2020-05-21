@@ -16,7 +16,7 @@ public class LinkedList<T> implements Iterable<T> {
     }
 
     public void add(T o) {
-        Node<T> node = new Node<T>(o, head);
+        Node<T> node = new Node<>(o, head);
         if (size == 0) {
             tail = node;
 
@@ -118,21 +118,26 @@ public class LinkedList<T> implements Iterable<T> {
         return false;
     }
 
+    @Override
     public String toString() {
-        return super.toString();
+        Iterator<T> iterator = iterator();
+        StringBuilder builderBuilder = new StringBuilder("[ ");
+        while (iterator.hasNext()){
+            builderBuilder.append(iterator().next()).append(", ");
+        }
+        String builder = builderBuilder.toString();
+        builder+="]";
+        return builder;
     }
-
 
     @Override
     public Iterator<T> iterator() {
-        return new Iterator<T>() {
+        return new Iterator<>() {
             private Node<T> nodeIteration = tail;
-            private int iterator = 0;
-
             @Override
             public boolean hasNext() {
-                if (iterator < size) {
-                    iterator++;
+                if (nodeIteration.next!=null) {
+                    nodeIteration = nodeIteration.getNext();
                     return true;
                 }
                 return false;
@@ -140,9 +145,7 @@ public class LinkedList<T> implements Iterable<T> {
 
             @Override
             public T next() {
-                T value = nodeIteration.value;
-                nodeIteration = nodeIteration.next;
-                return value;
+                return nodeIteration.value;
             }
         };
     }

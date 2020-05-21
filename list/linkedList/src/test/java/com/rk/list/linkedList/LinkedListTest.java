@@ -92,6 +92,7 @@ class LinkedListTest {
 
     @Test
     void testToString() {
+        System.out.println(defaultList.toString());
     }
 
 }
