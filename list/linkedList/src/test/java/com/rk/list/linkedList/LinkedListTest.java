@@ -62,10 +62,12 @@ class LinkedListTest {
 
     @Test
     void indexOf() {
+        assertEquals(1,defaultList.indexOf("www"));
     }
 
     @Test
     void lastIndexOf() {
+        assertEquals(5,defaultList.indexOf("yyy"));
     }
 
     @Test
