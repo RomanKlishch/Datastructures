@@ -10,7 +10,7 @@ class LinkedListTest {
     LinkedList<String> defaultList;
 
     @BeforeEach
-    public void setUp(){
+    public void setUp() {
         defaultList = new LinkedList<>();
         defaultList.add("qqq");
         defaultList.add("www");
@@ -28,65 +28,70 @@ class LinkedListTest {
 
     @Test
     void add() {
-       defaultList.add("sss");
-       assertEquals(7,defaultList.size());
+        defaultList.add("sss");
+        assertEquals(7, defaultList.size());
     }
 
     @Test
     void testAdd() {
-        defaultList.add(5,"ssss");
-        assertEquals(7,defaultList.size());
-        assertEquals("ssss",defaultList.get(5));
+        defaultList.add(5, "ssss");
+        assertEquals(7, defaultList.size());
+        assertEquals("ssss", defaultList.get(5));
 
     }
 
     @Test
     void remove() {
         defaultList.remove(0);
-        assertNotEquals("qqq",defaultList.get(0));
-        assertEquals("www",defaultList.get(0));
-        assertEquals(5,defaultList.size());
+        assertNotEquals("qqq", defaultList.get(0));
+        assertEquals("www", defaultList.get(0));
+        assertEquals(5, defaultList.size());
     }
 
     @Test
     void get() {
-        assertEquals("www",defaultList.get(1));
-        assertEquals("yyy",defaultList.get(5));
+        assertEquals("www", defaultList.get(1));
+        assertEquals("yyy", defaultList.get(5));
     }
 
     @Test
     void set() {
-        defaultList.set(1,"aaa");
-        assertEquals("aaa",defaultList.get(1));
+        defaultList.set(1, "aaa");
+        assertEquals("aaa", defaultList.get(1));
     }
 
     @Test
     void indexOf() {
-        assertEquals(1,defaultList.indexOf("www"));
+        assertEquals(1, defaultList.indexOf("www"));
     }
 
     @Test
     void lastIndexOf() {
-        assertEquals(5,defaultList.indexOf("yyy"));
+        assertEquals(5, defaultList.indexOf("yyy"));
     }
 
     @Test
     void clear() {
+        defaultList.clear();
+        assertEquals(0, defaultList.size());
+        assertNull(defaultList.get(0));
     }
 
     @Test
     void isEmpty() {
+        LinkedList<String> newList = new LinkedList<>();
+        assertFalse(newList.isEmpty());
+        assertTrue(defaultList.isEmpty());
     }
 
     @Test
     void contains() {
+        assertFalse(defaultList.contains("iii"));
+        assertTrue(defaultList.contains("www"));
     }
 
     @Test
     void testToString() {
     }
 
-    @Test
-    void listIterator() {
-    }
 }

@@ -98,14 +98,23 @@ public class LinkedList<T> implements Iterable<T> {
     }
 
     public void clear() {
-        return;
+        this.size = 0;
+        tail = new Node<>();
+        head = tail;
     }
 
     public boolean isEmpty() {
-        return false;
+        return size()>0;
     }
 
     public boolean contains(Object o) {
+        Node<T> iterationNode = tail;
+        for (int i = 0; i <size ; i++) {
+            if (o.equals(iterationNode.value)){
+                return true;
+            }
+            iterationNode = iterationNode.getNext();
+        }
         return false;
     }
 
