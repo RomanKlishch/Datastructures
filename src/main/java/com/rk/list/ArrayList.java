@@ -1,99 +1,118 @@
 package com.rk.list;
 
-public class ArrayList<T> {
+public class ArrayList<T> implements List {
+    private static final int DEFAULT_CAPACITY = 10;
     private Object[] array;
-    private int position = 0;
-    private int capacity = 2;
-
-    public ArrayList(int startSize) {
-        array = new Object[startSize];
-    }
+    private int size = 0;
 
     public ArrayList() {
-        array = new Object[10];
+        this(DEFAULT_CAPACITY);
     }
 
-    public void add(T value) {
-        checkSize();
-        array[position++] = value;
+    public ArrayList(int initialCapacity) {
+        array = new Object[initialCapacity];
     }
 
-//TODO: можно добавить еще два условия if(position== array.length-1) и if(position< array.length-1)
-// тогда на один System.arraycopy в случае переполнения массива будет меньше;
-    public void add(T value, int index) {
-        if (index>position){
-            throw new IndexOutOfBoundsException();
+    @Override
+    public void add(Object value) {
+        add(value, size);
+    }
+
+    @Override
+    public void add(Object value, int index) {
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException("Index should be between 0 and " + size);
         }
         checkSize();
-        System.arraycopy(array,index,array,index+1,position-index);
-        array[index]=value;
-        position++;
+        System.arraycopy(array, index, array, index + 1, size - index);
+        array[index] = value;
+        size++;
     }
 
+    @Override
     public Object remove(int index) {
-        if (index>position){
-            throw new IndexOutOfBoundsException();
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException("Index should be between 0 and" + size);
         }
-        Object obj = array[index];
-        System.arraycopy(array,index+1,array,index,position-index);
-        position--;
-        return obj;
+        if (isEmpty()){
+            throw new RuntimeException("Array already is empty");
+        }
+        Object object = array[index];
+        System.arraycopy(array, index + 1, array, index, size - index);
+        size--;
+        return object;
     }
 
+    @Override
     public Object get(int index) {
-        if (index>position){
-            throw new IndexOutOfBoundsException();
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException("Index should be between 0 and" + size);
         }
         return array[index];
     }
 
-    public Object set(Object value, int index){
-        if (index>position){
-            throw new IndexOutOfBoundsException();
+    @Override
+    public Object set(Object value, int index) {
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException("Index should be between 0 and" + size);
         }
-        return array[index]=value;
+        return array[index] = value;
     }
 
-//TODO: заполняю массив null для того что бы garbage collector мог почистить память.
+    @Override
     public void clear() {
-        position = 0;
-        resize();
-        for (Object value:array) {
-            value = null;
+        size = 0;
+        for (int i = 0; i < array.length; i++) {
+            array[i] = null;
         }
     }
 
+    @Override
     public int size() {
-        return position;
+        return size;
     }
 
+    @Override
     public boolean isEmpty() {
-        return position == 0;
+        return size == 0;
     }
 
+    @Override
     public boolean contains(Object value) {
-        for (int i = 0; i <position ; i++) {
-            if (value.equals(array[i])){
-                return true;
-            }
-        }
-        return false;
+        return indexOf(value) != -1;
     }
 
-//Todo: что должны возращать lastIndexOf и indexOf если value нет в списке?
+    @Override
     public int indexOf(Object value) {
-        for (int i = 0; i <position ; i++) {
-            if (value.equals(array[i])){
-                return i;
+        if (value == null) {
+            for (int i = 0; i < size; i++) {
+                if (null == array[i]) {
+                    return i;
+                }
+            }
+        } else {
+            for (int i = 0; i < size; i++) {
+                if (value.equals(array[i])) {
+                    return i;
+                }
             }
         }
         return -1;
     }
 
+    @Override
     public int lastIndexOf(Object value) {
-        for (int i = position-1; i == 0 ; i--) {
-            if (value.equals(array[i])){
-                return i;
+        if (value == null) {
+            for (int i = size - 1; i >= 0; i--) {
+                if (null == array[i]) {
+                    return i;
+                }
+            }
+        } else {
+            for (int i = size - 1; i >= 0; i--) {
+                if (value.equals(array[i])) {
+                    return i;
+                }
             }
         }
         return -1;
@@ -101,37 +120,28 @@ public class ArrayList<T> {
 
     @Override
     public String toString() {
-        if (position>0) {
-            StringBuilder builder = new StringBuilder();
-            builder.append('[');
-            for (int i = 0; i < position; i++) {
-                if (i == position - 1) {
-                    builder.append(array[i]);
-                    return builder + "]";
-                }
+        StringBuilder builder = new StringBuilder("[");
+        for (int i = 0; i < size; i++) {
+            if (i == size - 1) {
                 builder.append(array[i]);
-                builder.append(", ");
+                break;
             }
+            builder.append(array[i]);
+            builder.append(", ");
         }
-       return "[]";
+        builder.append(']');
+        return builder.toString();
     }
 
-//TODO: может как увеличить так и обрезать массив
-//TODO: наверное нужно настроить на какое-то определеное урезания массива,
-//      а не до прказателя position
     private void resize() {
-        Object[] newArray = new Object[(position+1)*capacity];
-        System.arraycopy(this.array,0,newArray,0,position);
-        this.array = newArray;
+        Object[] newArray = new Object[(int) (size * 1.5)];
+        System.arraycopy(array, 0, newArray, 0, size);
+        array = newArray;
     }
 
-    private void checkSize(){
-        if (position==array.length-1){
+    private void checkSize() {
+        if (size == array.length) {
             resize();
         }
-    }
-
-    public void setCapacity(int capacity) {
-        this.capacity = capacity;
     }
 }
