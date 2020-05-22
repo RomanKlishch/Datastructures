@@ -1,4 +1,4 @@
-package com.rk.list.ArryaList;
+package com.rk.list;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

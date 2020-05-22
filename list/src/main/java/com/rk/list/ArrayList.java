@@ -1,4 +1,4 @@
-package com.rk.list.ArryaList;
+package com.rk.list;
 
 public class ArrayList<T> {
     private Object[] array;
