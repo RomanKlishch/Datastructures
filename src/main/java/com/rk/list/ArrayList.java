@@ -155,5 +155,12 @@ public class ArrayList<T> implements List<T> {
 
     private void hereWillBeConfictAhtung(){
         System.out.println("Achtung!!! Angry dogs!!!");
+        conflict2();
+    }
+
+
+
+    void conflict2() {
+        System.out.println("asdasasdfds");
     }
 }
