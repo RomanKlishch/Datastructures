@@ -153,12 +153,22 @@ zxcxzx
         }
     }
 
+
+
     @Override
     public Iterator<T> iterator() {
         return null;
     }
 
+
+
     private void hereWillBeConfictAhtung(){
         System.out.println("Achtung!!! Angry dogs!!!");
+        conflict3();
     }
+
+    private void conflict3(){
+        System.out.println("here will be somnething not good!!!");
+    }
+
 }
