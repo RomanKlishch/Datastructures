@@ -104,6 +104,7 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public int lastIndexOf(T value) {
+        hereWillBeConfictAhtung();
         if (value == null) {
             for (int i = size - 1; i >= 0; i--) {
                 if (null == array[i]) {
@@ -150,5 +151,9 @@ public class ArrayList<T> implements List<T> {
     @Override
     public Iterator<T> iterator() {
         return null;
+    }
+
+    private void hereWillBeConfictAhtung(){
+        System.out.println("Achtung!!! Angry dogs!!!");
     }
 }
