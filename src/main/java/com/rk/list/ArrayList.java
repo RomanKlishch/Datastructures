@@ -158,8 +158,6 @@ public class ArrayList<T> implements List<T> {
         conflict2();
     }
 
-
-
     void conflict2() {
         System.out.println("asdasasdfds");
     }
