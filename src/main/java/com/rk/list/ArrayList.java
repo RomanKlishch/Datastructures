@@ -7,24 +7,19 @@ public class ArrayList<T> implements List<T> {
     private Object[] array;
     private int size;
 
-    asfadfsdfgsdgs
-
     public ArrayList() {
         this(DEFAULT_CAPACITY);
     }
 
-    zxzxczczxcz
-    sdgsdasczxcv
     public ArrayList(int initialCapacity) {
         array = new Object[initialCapacity];
     }
-
 
     @Override
     public void add(T value) {
         add(value, size);
     }
-zxcxzx
+
     @Override
     public void add(T value, int index) {
         if (index < 0 || index > size) {
