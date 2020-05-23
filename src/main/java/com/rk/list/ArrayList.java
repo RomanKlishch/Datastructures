@@ -160,5 +160,11 @@ public class ArrayList<T> implements List<T> {
 
     void conflict2() {
         System.out.println("asdasasdfds");
+        conflict3();
     }
+
+    private void conflict3(){
+        System.out.println("here will be somnething not good!!!");
+    }
+
 }
