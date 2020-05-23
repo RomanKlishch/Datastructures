@@ -1,25 +1,32 @@
 package com.rk.list;
 
-public class ArrayList<T> implements List {
+import java.util.Iterator;
+
+public class ArrayList<T> implements List<T> {
     private static final int DEFAULT_CAPACITY = 10;
     private Object[] array;
-    private int size = 0;
+    private int size;
+
+    asfadfsdfgsdgs
 
     public ArrayList() {
         this(DEFAULT_CAPACITY);
     }
 
+    zxzxczczxcz
+    sdgsdasczxcv
     public ArrayList(int initialCapacity) {
         array = new Object[initialCapacity];
     }
 
-    @Override
-    public void add(Object value) {
-        add(value, size);
-    }
 
     @Override
-    public void add(Object value, int index) {
+    public void add(T value) {
+        add(value, size);
+    }
+zxcxzx
+    @Override
+    public void add(T value, int index) {
         if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException("Index should be between 0 and " + size);
         }
@@ -52,7 +59,7 @@ public class ArrayList<T> implements List {
     }
 
     @Override
-    public Object set(Object value, int index) {
+    public Object set(T value, int index) {
         if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException("Index should be between 0 and" + size);
         }
@@ -78,12 +85,12 @@ public class ArrayList<T> implements List {
     }
 
     @Override
-    public boolean contains(Object value) {
+    public boolean contains(T value) {
         return indexOf(value) != -1;
     }
 
     @Override
-    public int indexOf(Object value) {
+    public int indexOf(T value) {
         if (value == null) {
             for (int i = 0; i < size; i++) {
                 if (null == array[i]) {
@@ -101,7 +108,7 @@ public class ArrayList<T> implements List {
     }
 
     @Override
-    public int lastIndexOf(Object value) {
+    public int lastIndexOf(T value) {
         hereWillBeConfictAhtung();
         if (value == null) {
             for (int i = size - 1; i >= 0; i--) {
@@ -144,6 +151,11 @@ public class ArrayList<T> implements List {
         if (size == array.length) {
             resize();
         }
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return null;
     }
 
     private void hereWillBeConfictAhtung(){
