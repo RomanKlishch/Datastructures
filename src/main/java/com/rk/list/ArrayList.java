@@ -1,6 +1,8 @@
 package com.rk.list;
 
 import java.util.Iterator;
+import java.util.Objects;
+import java.util.StringJoiner;
 
 public class ArrayList<T> implements List<T> {
     private static final int DEFAULT_CAPACITY = 10;
@@ -23,7 +25,7 @@ public class ArrayList<T> implements List<T> {
     @Override
     public void add(T value, int index) {
         if (index < 0 || index > size) {
-            throw new IndexOutOfBoundsException("Index should be between 0 and " + size);
+            throw new IndexOutOfBoundsException("Index out of range: " + size);
         }
         checkSize();
         System.arraycopy(array, index, array, index + 1, size - index);
@@ -31,42 +33,38 @@ public class ArrayList<T> implements List<T> {
         size++;
     }
 
+    //TODO: как протестировать "size - index - 1" или "size - index" ?
+    //TODO: checkIndex(index) нужно тестить в комплексе с методом или отдельно?
     @Override
-    public Object remove(int index) {
-        if (index < 0 || index > size) {
-            throw new IndexOutOfBoundsException("Index should be between 0 and" + size);
-        }
-        if (isEmpty()){
-            throw new RuntimeException("Array already is empty");
-        }
+    public T remove(int index) {
+        checkIndex(index);
         Object object = array[index];
-        System.arraycopy(array, index + 1, array, index, size - index);
+        System.arraycopy(array, index + 1, array, index, size - index - 1);
         size--;
-        return object;
+        return (T) object;
     }
 
     @Override
-    public Object get(int index) {
-        if (index < 0 || index > size) {
-            throw new IndexOutOfBoundsException("Index should be between 0 and" + size);
-        }
-        return array[index];
+    public T get(int index) {
+        checkIndex(index);
+        return (T) array[index];
     }
 
     @Override
-    public Object set(T value, int index) {
-        if (index < 0 || index > size) {
-            throw new IndexOutOfBoundsException("Index should be between 0 and" + size);
-        }
-        return array[index] = value;
+    public T set(T value, int index) {
+        checkIndex(index);
+        Object object = array[index];
+        array[index] = value;
+        return (T) object;
     }
 
+    //TODO: как проверить что все ссылки теперь null?
     @Override
     public void clear() {
-        size = 0;
-        for (int i = 0; i < array.length; i++) {
+        for (int i = 0; i < size; i++) {
             array[i] = null;
         }
+        size = 0;
     }
 
     @Override
@@ -86,17 +84,9 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public int indexOf(T value) {
-        if (value == null) {
-            for (int i = 0; i < size; i++) {
-                if (null == array[i]) {
-                    return i;
-                }
-            }
-        } else {
-            for (int i = 0; i < size; i++) {
-                if (value.equals(array[i])) {
-                    return i;
-                }
+        for (int i = 0; i < size; i++) {
+            if (Objects.equals(value, array[i])) {
+                return i;
             }
         }
         return -1;
@@ -104,18 +94,9 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public int lastIndexOf(T value) {
-        hereWillBeConfictAhtung();
-        if (value == null) {
-            for (int i = size - 1; i >= 0; i--) {
-                if (null == array[i]) {
-                    return i;
-                }
-            }
-        } else {
-            for (int i = size - 1; i >= 0; i--) {
-                if (value.equals(array[i])) {
-                    return i;
-                }
+        for (int i = size - 1; i >= 0; i--) {
+            if (Objects.equals(value, array[i])) {
+                return i;
             }
         }
         return -1;
@@ -123,16 +104,10 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public String toString() {
-        StringBuilder builder = new StringBuilder("[");
+        StringJoiner builder = new StringJoiner(", ", "[", "]");
         for (int i = 0; i < size; i++) {
-            if (i == size - 1) {
-                builder.append(array[i]);
-                break;
-            }
-            builder.append(array[i]);
-            builder.append(", ");
+            builder.add(String.valueOf(array[i]));
         }
-        builder.append(']');
         return builder.toString();
     }
 
@@ -148,23 +123,27 @@ public class ArrayList<T> implements List<T> {
         }
     }
 
+    private void checkIndex(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException("Index out of range: " + size);
+        }
+    }
+
     @Override
     public Iterator<T> iterator() {
-        return null;
-    }
+        return new Iterator<>() {
+            T object;
+            int index = 0;
 
-    private void hereWillBeConfictAhtung(){
-        System.out.println("Achtung!!! Angry dogs!!!");
-        conflict2();
-    }
+            @Override
+            public boolean hasNext() {
+                return index < size;
+            }
 
-    void conflict2() {
-        System.out.println("asdasasdfds");
-        conflict3();
+            @Override
+            public T next() {
+                return object = (T) array[index++];
+            }
+        };
     }
-
-    private void conflict3(){
-        System.out.println("here will be somnething not good!!!");
-    }
-
 }

@@ -14,16 +14,16 @@ public interface List<T> extends Iterable<T>{
 
     // [A, B, C] remove = 0
     // [B (index = 0) , C (index = 1)]
-    Object remove(int index);
+    T remove(int index);
 
     // [A, B, C] size = 3
     // we can get value by index between [0, size - 1]
     // otherwise throw new IndexOutOfBoundsException
-    Object get(int index);
+    T get(int index);
 
     // we can set value by index between [0, size - 1]
     // otherwise throw new IndexOutOfBoundsException
-    Object set(T value, int index);
+    T set(T value, int index);
 
     void clear();
 
