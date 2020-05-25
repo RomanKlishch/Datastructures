@@ -2,6 +2,7 @@ package com.rk.list;
 
 import java.util.Iterator;
 import java.util.Objects;
+import java.util.StringJoiner;
 
 public class LinkedList<T> implements List<T> {
     private Node<T> tail;
@@ -60,12 +61,14 @@ public class LinkedList<T> implements List<T> {
         validateIndex(index, index >= size);
         Node<T> iterationNode = getNode(index);
         if (index == 0) {
-            iterationNode.getNext().setPrev(null);
-            head = iterationNode.getNext();
-        }
-        if (index > 0) {
+            head.getNext().setPrev(null);
+            iterationNode = head;
+            head = head.getNext();
+        } else {
             iterationNode.getPrev().setNext(iterationNode.getNext());
-            iterationNode.getNext().setPrev(iterationNode.getPrev());
+            if (index != size - 1) {
+                iterationNode.getNext().setPrev(iterationNode.getPrev());
+            }
         }
         size--;
         return iterationNode.getValue();
@@ -130,33 +133,30 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public String toString() {
-        Iterator<T> iterator = iterator();
-        StringBuilder builderBuilder = new StringBuilder("[ ");
-        while (iterator.hasNext()) {
-            builderBuilder.append(iterator().next()).append(", ");
+        StringJoiner builder = new StringJoiner(", ", "[", "]");
+        Node<T> nodeIteration = head;
+        for (int i = 0; i < size; i++) {
+            builder.add(String.valueOf(nodeIteration.value));
+            nodeIteration = nodeIteration.getNext();
         }
-        String builder = builderBuilder.toString();
-        builder += "]";
-        return builder;
+        return builder.toString();
     }
 
     @Override
     public Iterator<T> iterator() {
         return new Iterator<>() {
-            private Node<T> nodeIteration = head;
+            Node<T> nodeIteration = head;
 
             @Override
             public boolean hasNext() {
-                if (nodeIteration.next != null) {
-                    nodeIteration = nodeIteration.getNext();
-                    return true;
-                }
-                return false;
+                return nodeIteration != null;
             }
 
             @Override
             public T next() {
-                return nodeIteration.value;
+                T value = nodeIteration.value;
+                nodeIteration = nodeIteration.getNext();
+                return value;
             }
         };
     }

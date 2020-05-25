@@ -76,7 +76,7 @@ public abstract class AbstractListTest {
 
     @Test
     void removeFromEmptyArray_shouldReturnException() {
-        List<String> list = new ArrayList<>();
+        List<String> list = getInstance();
         Throwable thrownRemove = assertThrows(IndexOutOfBoundsException.class,
                 () -> list.remove(0));
         assertEquals(IndexOutOfBoundsException.class, thrownRemove.getClass());
