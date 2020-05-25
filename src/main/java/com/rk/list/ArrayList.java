@@ -24,10 +24,8 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public void add(T value, int index) {
-        if (index < 0 || index > size) {
-            throw new IndexOutOfBoundsException("Index out of range: " + size);
-        }
-        checkSize();
+        validateIndex(index,index > size);
+        ensureCapacity();
         System.arraycopy(array, index, array, index + 1, size - index);
         array[index] = value;
         size++;
@@ -37,7 +35,7 @@ public class ArrayList<T> implements List<T> {
     //TODO: checkIndex(index) нужно тестить в комплексе с методом или отдельно?
     @Override
     public T remove(int index) {
-        checkIndex(index);
+        validateIndex(index,index >= size);
         Object object = array[index];
         System.arraycopy(array, index + 1, array, index, size - index - 1);
         size--;
@@ -46,13 +44,13 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public T get(int index) {
-        checkIndex(index);
+        validateIndex(index,index >= size);
         return (T) array[index];
     }
 
     @Override
     public T set(T value, int index) {
-        checkIndex(index);
+        validateIndex(index,index >= size);
         Object object = array[index];
         array[index] = value;
         return (T) object;
@@ -84,9 +82,9 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public int indexOf(T value) {
-        for (int i = 0; i < size; i++) {
-            if (Objects.equals(value, array[i])) {
-                return i;
+        for (int index = 0; index < size; index++) {
+            if (Objects.equals(value, array[index])) {
+                return index;
             }
         }
         return -1;
@@ -94,9 +92,9 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public int lastIndexOf(T value) {
-        for (int i = size - 1; i >= 0; i--) {
-            if (Objects.equals(value, array[i])) {
-                return i;
+        for (int index = size - 1; index >= 0; index--) {
+            if (Objects.equals(value, array[index])) {
+                return index;
             }
         }
         return -1;
@@ -112,19 +110,19 @@ public class ArrayList<T> implements List<T> {
     }
 
     private void resize() {
-        Object[] newArray = new Object[(int) (size * 1.5)];
+        Object[] newArray = new Object[(int) ((size+1) * 1.5)];
         System.arraycopy(array, 0, newArray, 0, size);
         array = newArray;
     }
 
-    private void checkSize() {
+    private void ensureCapacity() {
         if (size == array.length) {
             resize();
         }
     }
 
-    private void checkIndex(int index) {
-        if (index < 0 || index >= size) {
+    private void validateIndex(int index,boolean b) {
+        if (index < 0 || b) {
             throw new IndexOutOfBoundsException("Index out of range: " + size);
         }
     }
@@ -132,7 +130,7 @@ public class ArrayList<T> implements List<T> {
     @Override
     public Iterator<T> iterator() {
         return new Iterator<>() {
-            T object;
+            Object object;
             int index = 0;
 
             @Override
@@ -142,7 +140,8 @@ public class ArrayList<T> implements List<T> {
 
             @Override
             public T next() {
-                return object = (T) array[index++];
+                object = array[index++];
+                return (T) object;
             }
         };
     }
