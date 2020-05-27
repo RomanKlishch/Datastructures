@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class ArrayListTest extends AbstractListTest{
+class ArrayListTest extends AbstractListTest {
 
     @Override
     List getInstance() {
@@ -14,11 +14,10 @@ class ArrayListTest extends AbstractListTest{
     @Test
     void addToEmptyArray_shouldIncreaseSize() {
         List<String> strings = new ArrayList<>(0);
-        strings.add("qqq");
+        strings.add("A");
         strings.add(null);
-        strings.add("www");
+        strings.add("C");
         assertEquals(3, strings.size());
     }
-
 
 }

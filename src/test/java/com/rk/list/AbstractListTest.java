@@ -3,8 +3,6 @@ package com.rk.list;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.Iterator;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class AbstractListTest {
@@ -15,29 +13,29 @@ public abstract class AbstractListTest {
     @BeforeEach
     public void each() {
         defaultList = getInstance();
-        defaultList.add("qqq");
+        defaultList.add("A");
         defaultList.add(null);
-        defaultList.add("www");
+        defaultList.add("C");
     }
 
     @Test
     void addIndexMoreThenSize_shouldReturnException() {
         Throwable thrownMoreThenSize = assertThrows(IndexOutOfBoundsException.class,
-                () -> defaultList.add("zzz", 4));
+                () -> defaultList.add("D", 4));
         assertEquals(IndexOutOfBoundsException.class, thrownMoreThenSize.getClass());
     }
 
     @Test
     void addIndexLessThenZero_shouldReturnException() {
         Throwable thrownLessThenZero = assertThrows(IndexOutOfBoundsException.class,
-                () -> defaultList.add("zzz", -2));
+                () -> defaultList.add("D", -2));
         assertEquals(IndexOutOfBoundsException.class, thrownLessThenZero.getClass());
 
     }
 
     @Test
     void add_ShouldIncreaseSize() {
-        defaultList.add("eee");
+        defaultList.add("D");
         assertEquals(4, defaultList.size());
     }
 
@@ -49,14 +47,14 @@ public abstract class AbstractListTest {
 
     @Test
     void add_ShouldReturnAddedElement() {
-        defaultList.add("eee");
-        assertEquals("eee", defaultList.get(defaultList.size() - 1));
+        defaultList.add("D");
+        assertEquals("D", defaultList.get(defaultList.size() - 1));
     }
 
     @Test
     void addByZeroIndex_shouldReturnAddedElementAndIncreaseSize() {
-        defaultList.add("eee", 0);
-        assertEquals("eee", defaultList.get(0));
+        defaultList.add("D", 0);
+        assertEquals("D", defaultList.get(0));
         assertEquals(4, defaultList.size());
     }
 
@@ -67,6 +65,12 @@ public abstract class AbstractListTest {
         assertEquals(4, defaultList.size());
     }
 
+    @Test
+    void addByIndexInEmptyList_shouldIncreaseSize() {
+        List<String> strings = new LinkedList<>();
+        strings.add("D", 0);
+        assertEquals(1, strings.size());
+    }
 
     @Test
     void remove_shouldReduceSize() {
@@ -83,17 +87,25 @@ public abstract class AbstractListTest {
     }
 
     @Test
-    void removeFirst_shouldReturnRemoveObject() {
-        assertEquals("qqq", defaultList.remove(0));
+    void removeFirst_shouldReturnRemovedObject() {
+        assertEquals("A", defaultList.remove(0));
     }
 
     @Test
-    void removeLast_shouldReturnRemoveObject() {
-        assertEquals("www", defaultList.remove(defaultList.size() - 1));
+    void removeElementWhenSizeOne_shouldReturnRemovedObjectAndReduceSize() {
+        List<String> strings = getInstance();
+        strings.add("A");
+        assertEquals("A", strings.remove(0));
+        assertEquals(0, strings.size());
     }
 
     @Test
-    void removeNull_shouldReturnRemoveObject() {
+    void removeLast_shouldReturnRemovedObject() {
+        assertEquals("C", defaultList.remove(defaultList.size() - 1));
+    }
+
+    @Test
+    void removeNull_shouldReturnRemovedObject() {
         assertNull(defaultList.remove(1));
     }
 
@@ -114,12 +126,12 @@ public abstract class AbstractListTest {
 
     @Test
     void get_ShouldReturnZeroElementList() {
-        assertEquals("qqq", defaultList.get(0));
+        assertEquals("A", defaultList.get(0));
     }
 
     @Test
     void get_ShouldReturnLastElementList() {
-        assertEquals("www", defaultList.get(defaultList.size() - 1));
+        assertEquals("C", defaultList.get(defaultList.size() - 1));
     }
 
     @Test
@@ -143,28 +155,32 @@ public abstract class AbstractListTest {
     }
 
     @Test
-    void set_shouldReturnOldValue() {
-        assertEquals("www", defaultList.set("sss", 2));
+    void set_shouldReturnOldValueAndNotChangeAnotherValue() {
+        assertEquals("C", defaultList.set("D", 2));
+        assertEquals("A", defaultList.get(0));
+        assertNull(defaultList.get(1));
+        assertEquals("D", defaultList.get(2));
+
     }
 
     @Test
     void set_shouldChangeValueAndNotChangeSize() {
-        defaultList.set("sss", 2);
-        assertEquals("sss", defaultList.get(2));
+        defaultList.set("D", 2);
+        assertEquals("D", defaultList.get(2));
         assertEquals(3, defaultList.size());
     }
 
     @Test
     void setIndexMoreThenSize_shouldReturnException() {
         Throwable thrownMoreThenSize = assertThrows(IndexOutOfBoundsException.class,
-                () -> defaultList.set("a", 3));
+                () -> defaultList.set("D", 3));
         assertEquals(IndexOutOfBoundsException.class, thrownMoreThenSize.getClass());
     }
 
     @Test
     void setIndexLessThenZero_shouldReturnException() {
         Throwable thrownLessThenZero = assertThrows(IndexOutOfBoundsException.class,
-                () -> defaultList.set("s", -2));
+                () -> defaultList.set("D", -2));
         assertEquals(IndexOutOfBoundsException.class, thrownLessThenZero.getClass());
 
     }
@@ -192,12 +208,12 @@ public abstract class AbstractListTest {
 
     @Test
     void containsNotValidValue_shouldReturnFalse() {
-        assertFalse(defaultList.contains("ttt"));
+        assertFalse(defaultList.contains("D"));
     }
 
     @Test
     void containsValidValue_shouldReturnTrue() {
-        assertTrue(defaultList.contains("qqq"));
+        assertTrue(defaultList.contains("A"));
     }
 
     @Test
@@ -207,12 +223,12 @@ public abstract class AbstractListTest {
 
     @Test
     void indexOfValidValue_shouldReturnIndex() {
-        assertEquals(2, defaultList.indexOf("www"));
+        assertEquals(2, defaultList.indexOf("C"));
     }
 
     @Test
     void indexOfNotValidValue_shouldReturnResult() {
-        assertEquals(-1, defaultList.indexOf("ttt"));
+        assertEquals(-1, defaultList.indexOf("D"));
     }
 
     @Test
@@ -222,12 +238,12 @@ public abstract class AbstractListTest {
 
     @Test
     void lastIndexOfValidValue_shouldReturnIndex() {
-        assertEquals(2, defaultList.lastIndexOf("www"));
+        assertEquals(2, defaultList.lastIndexOf("C"));
     }
 
     @Test
     void lastIndexOfNotValidValue_shouldReturnResult() {
-        assertEquals(-1, defaultList.lastIndexOf("ttt"));
+        assertEquals(-1, defaultList.lastIndexOf("D"));
     }
 
     @Test
@@ -237,18 +253,17 @@ public abstract class AbstractListTest {
 
     @Test
     void testToString() {
-        assertEquals("[qqq, null, www]", defaultList.toString());
-        assertEquals("[]", new ArrayList<String>().toString());
+        assertEquals("[A, null, C]", defaultList.toString());
+        assertEquals("[]", getInstance().toString());
     }
 
     @Test
     void iterator_shouldIterateList() {
         StringBuilder allList = new StringBuilder();
-        Iterator<String> stringIterator = defaultList.iterator();
-        while (stringIterator.hasNext()) {
-            allList.append(stringIterator.next());
+        for (String s : defaultList) {
+            allList.append(s);
         }
-        assertEquals("qqqnullwww", allList.toString());
+        assertEquals("AnullC", allList.toString());
 
     }
 }

@@ -1,6 +1,7 @@
 package com.rk.list;
 
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.StringJoiner;
 
@@ -9,10 +10,6 @@ public class LinkedList<T> implements List<T> {
     private Node<T> head;
     private int size;
 
-    public LinkedList() {
-        size = 0;
-    }
-
     @Override
     public int size() {
         return size;
@@ -20,73 +17,69 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public void add(T value) {
-        Node<T> newNode = new Node<>(value);
-        if (size == 0) {
-            head = newNode;
-        } else {
-            tail.setNext(newNode);
-            newNode.setPrev(tail);
-        }
-        tail = newNode;
-        size++;
+        add(value, size);
     }
-
-    //TODO: как сделать Stream<Node> используя Stream.iterate()?
-    //TODO: как заменить if()?
 
     @Override
     public void add(T value, int index) {
-        validateIndex(index, index > size);
-        Node<T> newNode = new Node<>(value);
-        if (index == 0) {
-            if (size == 0) {
-                head = tail = newNode;
-            } else {
-                head.setPrev(newNode);
-                newNode.setNext(head);
-                head = newNode;
-            }
+        validateIndexAdd(index);
+        Node<T> newNode = new Node<>();
+        newNode.value = value;
+        if (size == 0) {
+            tail = head = newNode;
+        } else if (index == 0) {
+            head.prev = newNode;
+            newNode.next = head;
+            head = newNode;
+        } else if (index == size) {
+            tail.next = newNode;
+            newNode.prev = tail;
+            tail = newNode;
         } else {
             Node<T> iterationNode = getNode(index);
-            iterationNode.getPrev().setNext(newNode);
-            newNode.setPrev(iterationNode.getPrev());
-            newNode.setNext(iterationNode);
-            iterationNode.setPrev(newNode);
+            iterationNode.prev.next = newNode;
+            newNode.prev = iterationNode.prev;
+            newNode.next = iterationNode;
+            iterationNode.prev = newNode;
         }
         size++;
     }
 
+
     @Override
     public T remove(int index) {
-        validateIndex(index, index >= size);
+        validateIndex(index);
         Node<T> iterationNode = getNode(index);
-        if (index == 0) {
-            head.getNext().setPrev(null);
-            iterationNode = head;
-            head = head.getNext();
+        if (size == 1) {
+            head = tail = null;
+        } else if (index == 0) {
+            head.next.prev = null;
+            head = head.next;
+        } else if (index == size - 1) {
+            tail.prev.next = null;
+            tail = tail.prev;
         } else {
-            iterationNode.getPrev().setNext(iterationNode.getNext());
-            if (index != size - 1) {
-                iterationNode.getNext().setPrev(iterationNode.getPrev());
-            }
+            iterationNode.prev.next = iterationNode.next;
+            iterationNode.next.prev = iterationNode.prev;
         }
         size--;
-        return iterationNode.getValue();
+        return iterationNode.value;
+
     }
 
     @Override
     public T get(int index) {
-        validateIndex(index, index >= size);
+        validateIndex(index);
         Node<T> iterationNode = getNode(index);
-        return iterationNode.getValue();
+        return iterationNode.value;
     }
 
     @Override
     public T set(T value, int index) {
-        validateIndex(index, index >= size);
+        validateIndex(index);
         Node<T> newNode = getNode(index);
         T oldValue = newNode.value;
-        newNode.setValue(value);
+        newNode.value = value;
         return oldValue;
     }
 
@@ -97,7 +90,7 @@ public class LinkedList<T> implements List<T> {
             if (Objects.equals(value, iterationNode.value)) {
                 return i;
             }
-            iterationNode = iterationNode.getNext();
+            iterationNode = iterationNode.next;
         }
         return -1;
     }
@@ -109,7 +102,7 @@ public class LinkedList<T> implements List<T> {
             if (Objects.equals(value, iterationNode.value)) {
                 return i;
             }
-            iterationNode = iterationNode.getPrev();
+            iterationNode = iterationNode.prev;
         }
         return -1;
     }
@@ -117,8 +110,7 @@ public class LinkedList<T> implements List<T> {
     @Override
     public void clear() {
         size = 0;
-        head = new Node<>();
-        tail = head;
+        tail = head = null;
     }
 
     @Override
@@ -137,7 +129,7 @@ public class LinkedList<T> implements List<T> {
         Node<T> nodeIteration = head;
         for (int i = 0; i < size; i++) {
             builder.add(String.valueOf(nodeIteration.value));
-            nodeIteration = nodeIteration.getNext();
+            nodeIteration = nodeIteration.next;
         }
         return builder.toString();
     }
@@ -154,16 +146,27 @@ public class LinkedList<T> implements List<T> {
 
             @Override
             public T next() {
+                if (!hasNext()) {
+                    throw new NoSuchElementException("Next element not exist");
+                }
                 T value = nodeIteration.value;
-                nodeIteration = nodeIteration.getNext();
+                nodeIteration = nodeIteration.next;
                 return value;
             }
         };
     }
 
-    private void validateIndex(int index, boolean b) {
-        if (index < 0 || b) {
-            throw new IndexOutOfBoundsException("Index out of range: " + size);
+    private void validateIndex(int index) {
+        if (index < 0 || index >= size) {
+            throw new IndexOutOfBoundsException(
+                    String.format("Index should be between 0 and size exclusive [ 0, %d], but was %d", size, index));
+        }
+    }
+
+    private void validateIndexAdd(int index) {
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException(
+                    String.format("Index should be between 0 and size inclusive [ 0, %d], but was %d", size, index));
         }
     }
 
@@ -172,52 +175,24 @@ public class LinkedList<T> implements List<T> {
         if (index <= size / 2) {
             iterationNode = head;
             for (int i = 0; i < index; i++) {
-                iterationNode = iterationNode.getNext();
+                iterationNode = iterationNode.next;
             }
         }
         if (index > size / 2) {
             iterationNode = tail;
             for (int i = size - 1; i > index; i--) {
-                iterationNode = iterationNode.getPrev();
+                iterationNode = iterationNode.prev;
             }
         }
         return iterationNode;
     }
 
-    private class Node<E> {
-        T value;
-        private Node<E> prev;
-        private Node<E> next;
+    private static class Node<T> {
+        private T value;
+        private Node<T> prev;
+        private Node<T> next;
 
         public Node() {
-        }
-
-        public Node(T value) {
-            this.value = value;
-        }
-
-        public void setValue(T value) {
-            this.value = value;
-        }
-
-        public void setPrev(Node<E> prev) {
-            this.prev = prev;
-        }
-
-        public void setNext(Node<E> next) {
-            this.next = next;
-        }
-
-        public T getValue() {
-            return value;
-        }
-
-        public Node<E> getPrev() {
-            return prev;
-        }
-
-        public Node<E> getNext() {
-            return next;
         }
     }
 }
