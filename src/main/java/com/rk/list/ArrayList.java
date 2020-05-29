@@ -59,8 +59,8 @@ public class ArrayList<T> implements List<T> {
 
     @Override
     public void clear() {
-        for (int i = 0; i < size; i++) {
-            array[i] = null;
+        for (T object : this) {
+            object = null;
         }
         size = 0;
     }
@@ -103,8 +103,8 @@ public class ArrayList<T> implements List<T> {
     @Override
     public String toString() {
         StringJoiner builder = new StringJoiner(", ", "[", "]");
-        for (int i = 0; i < size; i++) {
-            builder.add(String.valueOf(array[i]));
+        for (T object : this) {
+            builder.add(String.valueOf(object));
         }
         return builder.toString();
     }

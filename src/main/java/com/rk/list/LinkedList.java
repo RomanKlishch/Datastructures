@@ -45,7 +45,6 @@ public class LinkedList<T> implements List<T> {
         size++;
     }
 
-
     @Override
     public T remove(int index) {
         validateIndex(index);
@@ -64,7 +63,6 @@ public class LinkedList<T> implements List<T> {
         }
         size--;
         return iterationNode.value;
-
     }
 
     @Override
@@ -85,12 +83,12 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public int indexOf(T value) {
-        Node<T> iterationNode = head;
-        for (int i = 0; i < size; i++) {
-            if (Objects.equals(value, iterationNode.value)) {
+        int i = 0;
+        for (T object:this){
+            if (Objects.equals(value, object)) {
                 return i;
             }
-            iterationNode = iterationNode.next;
+            i++;
         }
         return -1;
     }
@@ -126,10 +124,8 @@ public class LinkedList<T> implements List<T> {
     @Override
     public String toString() {
         StringJoiner builder = new StringJoiner(", ", "[", "]");
-        Node<T> nodeIteration = head;
-        for (int i = 0; i < size; i++) {
-            builder.add(String.valueOf(nodeIteration.value));
-            nodeIteration = nodeIteration.next;
+        for(T object:this){
+            builder.add(String.valueOf(object));
         }
         return builder.toString();
     }
@@ -177,8 +173,7 @@ public class LinkedList<T> implements List<T> {
             for (int i = 0; i < index; i++) {
                 iterationNode = iterationNode.next;
             }
-        }
-        if (index > size / 2) {
+        } else if (index > size / 2) {
             iterationNode = tail;
             for (int i = size - 1; i > index; i--) {
                 iterationNode = iterationNode.prev;
