@@ -5,7 +5,7 @@ import com.rk.list.ArrayList;
 import java.util.Objects;
 
 public class HashMap<K, V> implements Map<K, V> {
-    private static final int INITIAL_CAPACITY = 6;
+    private static final int INITIAL_CAPACITY = 5;
     private ArrayList<Entry<K, V>>[] hashMap;
     private int size;
     private int capacity;
@@ -44,7 +44,7 @@ public class HashMap<K, V> implements Map<K, V> {
         size++;
         return value;
     }
-
+//TODO: возможна колизия, непонятно null вернулся, потому что нет такого ключа или значение равно null?
     @Override
     public V get(K key) {
         int basket = findBasket(key);
@@ -131,7 +131,6 @@ public class HashMap<K, V> implements Map<K, V> {
     private int findBasket(K key) {
         return hash(key) % capacity;
     }
-
 
     private static class Entry<K, V> {
         private Entry<K, V> next;
