@@ -92,7 +92,7 @@ public class HashMapTest {
 
     @Test
     void putAll_shouldIncreaseSize() {
-        Map<Integer, Integer> newMap = new HashMap<>();
+        HashMap<Integer, Integer> newMap = new HashMap<>();
         newMap.put(40, 4);
         newMap.put(50, 5);
         newMap.put(null, 6);
@@ -103,7 +103,7 @@ public class HashMapTest {
 
     @Test
     void putAllRepeatElement_shouldNotIncreaseSizeAndChangeValue() {
-        Map<Integer, Integer> newMap = new HashMap<>();
+        HashMap<Integer, Integer> newMap = new HashMap<>();
         newMap.put(10, 10);
         newMap.put(20, 20);
         newMap.put(30, 30);

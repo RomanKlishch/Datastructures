@@ -5,7 +5,7 @@ import com.rk.list.ArrayList;
 import java.util.Objects;
 
 public class HashMap<K, V> implements Map<K, V> {
-    private static final int INITIAL_CAPACITY = 16;
+    private static final int INITIAL_CAPACITY = 6;
     private ArrayList<Entry<K, V>>[] hashMap;
     private int size;
     private int capacity;
@@ -23,6 +23,10 @@ public class HashMap<K, V> implements Map<K, V> {
         for (int i = 0; i < hashMap.length; i++) {
             hashMap[i] = new ArrayList<>(0);
         }
+    }
+
+    public ArrayList<Entry<K, V>>[] getHashMap() {
+        return hashMap;
     }
 
     @Override
@@ -69,7 +73,15 @@ public class HashMap<K, V> implements Map<K, V> {
 
     @Override
     public void putAll(Map<K, V> map) {
-        
+
+    }
+
+    public void putAll(HashMap<K, V> map) {
+        for (int i = 0; i < map.capacity(); i++) {
+            for (Entry<K, V> entry : map.getHashMap()[i]) {
+                putIfAbsent(entry.key, entry.value);
+            }
+        }
     }
 
     @Override
