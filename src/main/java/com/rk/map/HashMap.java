@@ -10,7 +10,7 @@ public class HashMap<K, V> implements Map<K, V> {
     private static final double INITIAL_LOAD_FACTORY = 0.75;
     private ArrayList<Entry<K, V>>[] buckets;
     private int size;
-    private double loadFactory;
+    private final double loadFactory;
 
     public HashMap() {
         this(INITIAL_CAPACITY, INITIAL_LOAD_FACTORY);
@@ -19,7 +19,7 @@ public class HashMap<K, V> implements Map<K, V> {
     public HashMap(int initialCapacity, double loadFactory) {
         if (initialCapacity < 0) {
             throw new IllegalArgumentException(
-                    "Capacity should be greater than zero. " + initialCapacity + " less then 0");
+                    "Capacity should be greater than or equal zero. " + initialCapacity + " less then 0");
         }
         this.buckets = new ArrayList[initialCapacity];
         this.loadFactory = loadFactory;
@@ -85,7 +85,7 @@ public class HashMap<K, V> implements Map<K, V> {
         for (Entry<K, V> entry : bucket) {
             if (entry.getHash() == keyHash && Objects.equals(entry.getKey(), key)) {
                 V removeEntry = entry.getValue();
-                entry = null;
+                bucket.remove(entry);
                 size--;
                 return removeEntry;
             }
