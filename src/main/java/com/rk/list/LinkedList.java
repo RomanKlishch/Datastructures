@@ -3,17 +3,10 @@ package com.rk.list;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.StringJoiner;
 
-public class LinkedList<T> implements List<T> {
+public class LinkedList<T> extends AbstractList<T> implements List<T> {
     private Node<T> tail;
     private Node<T> head;
-    private int size;
-
-    @Override
-    public int size() {
-        return size;
-    }
 
     @Override
     public void add(T value) {
@@ -22,7 +15,7 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public void add(T value, int index) {
-        validateIndexAdd(index);
+        validateIndexForAdd(index);
         Node<T> newNode = new Node<>();
         newNode.value = value;
         if (size == 0) {
@@ -84,7 +77,7 @@ public class LinkedList<T> implements List<T> {
     @Override
     public int indexOf(T value) {
         int i = 0;
-        for (T object:this){
+        for (T object : this) {
             if (Objects.equals(value, object)) {
                 return i;
             }
@@ -112,28 +105,9 @@ public class LinkedList<T> implements List<T> {
     }
 
     @Override
-    public boolean isEmpty() {
-        return size() == 0;
-    }
-
-    @Override
-    public boolean contains(T value) {
-        return indexOf(value) != -1;
-    }
-
-    @Override
-    public String toString() {
-        StringJoiner builder = new StringJoiner(", ", "[", "]");
-        for(T object:this){
-            builder.add(String.valueOf(object));
-        }
-        return builder.toString();
-    }
-
-    @Override
     public Iterator<T> iterator() {
         return new Iterator<>() {
-            Node<T> nodeIteration = head;
+            private Node<T> nodeIteration = head;
 
             @Override
             public boolean hasNext() {
@@ -152,19 +126,6 @@ public class LinkedList<T> implements List<T> {
         };
     }
 
-    private void validateIndex(int index) {
-        if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException(
-                    String.format("Index should be between 0 and size exclusive [ 0, %d], but was %d", size, index));
-        }
-    }
-
-    private void validateIndexAdd(int index) {
-        if (index < 0 || index > size) {
-            throw new IndexOutOfBoundsException(
-                    String.format("Index should be between 0 and size inclusive [ 0, %d], but was %d", size, index));
-        }
-    }
 
     private Node<T> getNode(int index) {
         Node<T> iterationNode = null;
@@ -186,8 +147,5 @@ public class LinkedList<T> implements List<T> {
         private T value;
         private Node<T> prev;
         private Node<T> next;
-
-        public Node() {
-        }
     }
 }

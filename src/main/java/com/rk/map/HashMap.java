@@ -1,56 +1,75 @@
 package com.rk.map;
 
-import com.rk.list.ArrayList;
-
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Objects;
 
 public class HashMap<K, V> implements Map<K, V> {
     private static final int INITIAL_CAPACITY = 5;
-    private ArrayList<Entry<K, V>>[] hashMap;
+    private static final double INITIAL_LOAD_FACTORY = 0.75;
+    private ArrayList<Entry<K, V>>[] buckets;
     private int size;
-    private int capacity;
+    private double loadFactory;
 
     public HashMap() {
-        this(INITIAL_CAPACITY);
+        this(INITIAL_CAPACITY, INITIAL_LOAD_FACTORY);
     }
 
-    public HashMap(int initialCapacity) {
-        if (initialCapacity < 0)
+    public HashMap(int initialCapacity, double loadFactory) {
+        if (initialCapacity < 0) {
             throw new IllegalArgumentException(
                     "Capacity should be greater than zero. " + initialCapacity + " less then 0");
-        capacity = initialCapacity;
-        this.hashMap = new ArrayList[initialCapacity];
-        for (int i = 0; i < hashMap.length; i++) {
-            hashMap[i] = new ArrayList<>(0);
         }
-    }
 
-    public ArrayList<Entry<K, V>>[] getHashMap() {
-        return hashMap;
+        this.buckets = new ArrayList[initialCapacity];
+        this.loadFactory = loadFactory;
     }
 
     @Override
     public V put(K key, V value) {
+        resize();
+
         Entry<K, V> newEntry = new Entry<>(key, value);
-        int basket = findBasket(key);
-        for (Entry<K, V> entry : hashMap[basket]) {
-            if (entry.hash == hash(key) && Objects.equals(entry.key, key)) {
-                V oldValue = entry.value;
-                entry.value = value;
+        int bucketIndex = getBucketIndex(key);
+        int keyHash = hash(key);
+        checkBucket(bucketIndex);
+        for (Entry<K, V> entry : buckets[bucketIndex]) {
+            if (entry.getHash() == keyHash && Objects.equals(entry.getKey(), key)) {
+                V oldValue = entry.getValue();
+                entry.setValue(value);
                 return oldValue;
             }
         }
-        hashMap[basket].add(newEntry);
+        buckets[bucketIndex].add(newEntry);
         size++;
         return value;
     }
-//TODO: возможна колизия, непонятно null вернулся, потому что нет такого ключа или значение равно null?
+    //TODO:
+    @Override
+    public V putIfAbsent(K key, V value) {
+        resize();
+
+        Entry<K, V> newEntry = new Entry<>(key, value);
+        int bucketIndex = getBucketIndex(key);
+        int keyHash = hash(key);
+        for (Entry<K, V> entry : buckets[bucketIndex]) {
+            if (entry.getHash() == keyHash && Objects.equals(entry.getKey(), key)) {
+                return entry.getValue();
+            }
+        }
+        buckets[bucketIndex].add(newEntry);
+        size++;
+        return value;
+    }
+
+    //TODO: возможна колизия, непонятно null вернулся, потому что нет такого ключа или значение равно null?
     @Override
     public V get(K key) {
-        int basket = findBasket(key);
-        for (Entry<K, V> entry : hashMap[basket]) {
-            if (entry.hash == hash(key) && Objects.equals(entry.key, key)) {
-                return entry.value;
+        int bucketIndex = getBucketIndex(key);
+        int keyHash = hash(key);
+        for (Entry<K, V> entry : buckets[bucketIndex]) {
+            if (entry.getHash() == keyHash && Objects.equals(entry.getKey(), key)) {
+                return entry.getValue();
             }
         }
         return null;
@@ -58,13 +77,14 @@ public class HashMap<K, V> implements Map<K, V> {
 
     @Override
     public V remove(K key) {
-        int basket = findBasket(key);
+        int bucketIndex = getBucketIndex(key);
+        int keyHash = hash(key);
         int i = 0;
-        for (Entry<K, V> entry : hashMap[basket]) {
-            if (entry.hash == hash(key) && Objects.equals(entry.key, key)) {
-                hashMap[basket].remove(i);
+        for (Entry<K, V> entry : buckets[bucketIndex]) {
+            if (entry.getHash() == keyHash && Objects.equals(entry.getKey(), key)) {
+                buckets[bucketIndex].remove(i);
                 size--;
-                return entry.value;
+                return entry.getValue();
             }
             i++;
         }
@@ -73,29 +93,9 @@ public class HashMap<K, V> implements Map<K, V> {
 
     @Override
     public void putAll(Map<K, V> map) {
-
-    }
-
-    public void putAll(HashMap<K, V> map) {
-        for (int i = 0; i < map.capacity(); i++) {
-            for (Entry<K, V> entry : map.getHashMap()[i]) {
-                putIfAbsent(entry.key, entry.value);
-            }
+        for (Entry<K, V> entry : map) {
+            putIfAbsent(entry.getKey(), entry.getValue());
         }
-    }
-
-    @Override
-    public V putIfAbsent(K key, V value) {
-        Entry<K, V> newEntry = new Entry<>(key, value);
-        int basket = findBasket(key);
-        for (Entry<K, V> entry : hashMap[basket]) {
-            if (entry.hash == hash(key) && Objects.equals(entry.key, key)) {
-                return entry.value;
-            }
-        }
-        hashMap[basket].add(newEntry);
-        size++;
-        return value;
     }
 
     @Override
@@ -110,67 +110,74 @@ public class HashMap<K, V> implements Map<K, V> {
 
     @Override
     public boolean containsKey(K key) {
-        int basket;
-        basket = findBasket(key);
-        for (Entry<K, V> entry : hashMap[basket]) {
-            if (entry.hash == hash(key) && Objects.equals(entry.key, key)) {
+        int bucketIndex = getBucketIndex(key);
+        int keyHash = hash(key);
+        for (Entry<K, V> entry : buckets[bucketIndex]) {
+            if (entry.getHash() == keyHash && Objects.equals(entry.getKey(), key)) {
                 return true;
             }
         }
         return false;
     }
 
-    public int capacity() {
-        return capacity;
+    @Override
+    public Iterator<Map.Entry<K, V>> iterator() {
+        return new Iterator<>() {
+            private int indexBuckets = 0;
+            private int indexList = 0;
+            private int count = 0;
+
+            @Override
+            public boolean hasNext() {
+                return count < size;
+            }
+
+            @Override
+            public Entry<K, V> next() {
+                while (indexBuckets < buckets.length) {
+                    if (buckets[indexBuckets] != null && buckets[indexBuckets].size() != 0) {
+                        while (indexList < buckets[indexBuckets].size()) {
+                            count++;
+                            return buckets[indexBuckets].get(indexList++);
+                        }
+                        indexList = 0;
+                    }
+                    indexBuckets++;
+                }
+                return null;
+            }
+        };
     }
 
     private int hash(K key) {
-        return key == null ? 0 : 31 * key.hashCode();
+        return key == null ? 0 : key.hashCode();
     }
 
-    private int findBasket(K key) {
-        return hash(key) % capacity;
+    private int getBucketIndex(K key) {
+        return hash(key) % buckets.length;
     }
 
-    private static class Entry<K, V> {
-        private Entry<K, V> next;
-        private K key;
-        private V value;
-        private int hash;
-
-        public Entry() {
+    private void checkBucket(int bucketIndex) {
+        if (buckets[bucketIndex] == null) {
+            buckets[bucketIndex] = new ArrayList<>(0);
         }
-
-        public Entry(K key, V value) {
-            this.key = key;
-            this.value = value;
-            if (key == null) {
-                this.hash = 0;
-            } else {
-                this.hash = 31 * key.hashCode();
+    }
+    //TODO: какой написать тест что бы проверить resize()?
+    private void resize() {
+        if (size != 0 && size / buckets.length > loadFactory) {
+            ArrayList<Entry<K, V>>[] newBuckets = new ArrayList[((int) (buckets.length * 1.5)+1)];
+            for (ArrayList<Entry<K, V>> list : buckets) {
+                if (list!=null){
+                    for (Entry<K, V> entry : list) {
+                        int bucketIndex = entry.getHash() / newBuckets.length;
+                        if (newBuckets[bucketIndex]==null){
+                            newBuckets[bucketIndex] = new ArrayList<>(0);
+                        }
+                        newBuckets[bucketIndex].add(entry);
+                    }
+                }
             }
-        }
-
-        //TODO:прввильно ли будет переопределить equals() только по key и hash?
-        @Override
-        public boolean equals(Object object) {
-            if (object == null) {
-                return false;
-            }
-            if (getClass() != object.getClass()) {
-                return false;
-            }
-            if (object == this) {
-                return true;
-            }
-            Entry<K, V> entry = (Entry<K, V>) object;
-            return (hash == entry.hash && key.equals(entry.key));
-        }
-
-        @Override
-        public int hashCode() {
-            hash = key == null ? 0 : 31 * key.hashCode();
-            return hash;
+            buckets = newBuckets;
         }
     }
 }

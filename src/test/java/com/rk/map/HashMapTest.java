@@ -20,7 +20,10 @@ public class HashMapTest {
     @Test
     public void put_shouldIncreaseSize() {
         defaultMap.put(40, 4);
-        assertEquals(4, defaultMap.size());
+        defaultMap.put(50, 5);
+        defaultMap.put(60, 6);
+        defaultMap.put(70, 7);
+        assertEquals(7, defaultMap.size());
     }
 
     @Test
@@ -112,7 +115,6 @@ public class HashMapTest {
         assertEquals(1, defaultMap.get(10));
         assertEquals(2, defaultMap.get(20));
         assertEquals(3, defaultMap.get(30));
-
     }
 
     @Test

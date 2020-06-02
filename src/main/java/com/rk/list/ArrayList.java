@@ -3,12 +3,10 @@ package com.rk.list;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
-import java.util.StringJoiner;
 
-public class ArrayList<T> implements List<T> {
+public class ArrayList<T> extends AbstractList<T> implements List<T> {
     private static final int DEFAULT_CAPACITY = 10;
     private T[] array;
-    private int size;
 
     public ArrayList() {
         this(DEFAULT_CAPACITY);
@@ -66,21 +64,6 @@ public class ArrayList<T> implements List<T> {
     }
 
     @Override
-    public int size() {
-        return size;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return size == 0;
-    }
-
-    @Override
-    public boolean contains(T value) {
-        return indexOf(value) != -1;
-    }
-
-    @Override
     public int indexOf(T value) {
         for (int index = 0; index < size; index++) {
             if (Objects.equals(value, array[index])) {
@@ -99,16 +82,7 @@ public class ArrayList<T> implements List<T> {
         }
         return -1;
     }
-
-    @Override
-    public String toString() {
-        StringJoiner builder = new StringJoiner(", ", "[", "]");
-        for (T object : this) {
-            builder.add(String.valueOf(object));
-        }
-        return builder.toString();
-    }
-
+    
     @SuppressWarnings("uncheked")
     private void resize() {
         T[] newArray = (T[]) new Object[(int) ((size + 1.5) * 1)];
@@ -119,20 +93,6 @@ public class ArrayList<T> implements List<T> {
     private void ensureCapacity() {
         if (size == array.length) {
             resize();
-        }
-    }
-
-    private void validateIndex(int index) {
-        if (index < 0 || index >= size) {
-            throw new IndexOutOfBoundsException(
-            );
-        }
-    }
-
-    private void validateIndexForAdd(int index) {
-        if (index < 0 || index > size) {
-            throw new IndexOutOfBoundsException(
-                    String.format("Index should be between 0 and size inclusive [ 0, %d), but was %d", size, index));
         }
     }
 
