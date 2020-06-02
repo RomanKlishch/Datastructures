@@ -2,6 +2,7 @@ package com.rk.map;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Objects;
 
 public class HashMap<K, V> implements Map<K, V> {
@@ -20,7 +21,6 @@ public class HashMap<K, V> implements Map<K, V> {
             throw new IllegalArgumentException(
                     "Capacity should be greater than zero. " + initialCapacity + " less then 0");
         }
-
         this.buckets = new ArrayList[initialCapacity];
         this.loadFactory = loadFactory;
     }
@@ -44,32 +44,34 @@ public class HashMap<K, V> implements Map<K, V> {
         size++;
         return value;
     }
-    //TODO:
+
     @Override
     public V putIfAbsent(K key, V value) {
         resize();
 
-        Entry<K, V> newEntry = new Entry<>(key, value);
         int bucketIndex = getBucketIndex(key);
         int keyHash = hash(key);
+        if (buckets[bucketIndex] == null) {
+            put(key, value);
+        }
         for (Entry<K, V> entry : buckets[bucketIndex]) {
             if (entry.getHash() == keyHash && Objects.equals(entry.getKey(), key)) {
                 return entry.getValue();
             }
         }
-        buckets[bucketIndex].add(newEntry);
-        size++;
+        put(key, value);
         return value;
     }
 
-    //TODO: возможна колизия, непонятно null вернулся, потому что нет такого ключа или значение равно null?
     @Override
     public V get(K key) {
-        int bucketIndex = getBucketIndex(key);
-        int keyHash = hash(key);
-        for (Entry<K, V> entry : buckets[bucketIndex]) {
-            if (entry.getHash() == keyHash && Objects.equals(entry.getKey(), key)) {
-                return entry.getValue();
+        if (containsKey(key)) {
+            int bucketIndex = getBucketIndex(key);
+            int keyHash = hash(key);
+            for (Entry<K, V> entry : buckets[bucketIndex]) {
+                if (entry.getHash() == keyHash && Objects.equals(entry.getKey(), key)) {
+                    return entry.getValue();
+                }
             }
         }
         return null;
@@ -79,14 +81,14 @@ public class HashMap<K, V> implements Map<K, V> {
     public V remove(K key) {
         int bucketIndex = getBucketIndex(key);
         int keyHash = hash(key);
-        int i = 0;
-        for (Entry<K, V> entry : buckets[bucketIndex]) {
+        List<Entry<K, V>> bucket = buckets[bucketIndex];
+        for (Entry<K, V> entry : bucket) {
             if (entry.getHash() == keyHash && Objects.equals(entry.getKey(), key)) {
-                buckets[bucketIndex].remove(i);
+                V removeEntry = entry.getValue();
+                entry = null;
                 size--;
-                return entry.getValue();
+                return removeEntry;
             }
-            i++;
         }
         return null;
     }
@@ -162,15 +164,16 @@ public class HashMap<K, V> implements Map<K, V> {
             buckets[bucketIndex] = new ArrayList<>(0);
         }
     }
-    //TODO: какой написать тест что бы проверить resize()?
+
+    //TODO: Как протестировать метод и нужно ли это делать?
     private void resize() {
         if (size != 0 && size / buckets.length > loadFactory) {
-            ArrayList<Entry<K, V>>[] newBuckets = new ArrayList[((int) (buckets.length * 1.5)+1)];
+            ArrayList<Entry<K, V>>[] newBuckets = new ArrayList[((int) (buckets.length * 1.5) + 1)];
             for (ArrayList<Entry<K, V>> list : buckets) {
-                if (list!=null){
+                if (list != null) {
                     for (Entry<K, V> entry : list) {
                         int bucketIndex = entry.getHash() / newBuckets.length;
-                        if (newBuckets[bucketIndex]==null){
+                        if (newBuckets[bucketIndex] == null) {
                             newBuckets[bucketIndex] = new ArrayList<>(0);
                         }
                         newBuckets[bucketIndex].add(entry);
