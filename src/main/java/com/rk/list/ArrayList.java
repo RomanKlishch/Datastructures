@@ -18,11 +18,6 @@ public class ArrayList<T> extends AbstractList<T> implements List<T> {
     }
 
     @Override
-    public void add(T value) {
-        add(value, size);
-    }
-
-    @Override
     public void add(T value, int index) {
         validateIndexForAdd(index);
         ensureCapacity();
@@ -82,7 +77,12 @@ public class ArrayList<T> extends AbstractList<T> implements List<T> {
         }
         return -1;
     }
-    
+
+    @Override
+    public Iterator<T> iterator() {
+        return new ArrayListIterator<>();
+    }
+
     @SuppressWarnings("uncheked")
     private void resize() {
         T[] newArray = (T[]) new Object[(int) ((size + 1.5) * 1)];
@@ -96,25 +96,21 @@ public class ArrayList<T> extends AbstractList<T> implements List<T> {
         }
     }
 
-    @Override
-    public Iterator<T> iterator() {
-        return new Iterator<>() {
-            private int index = 0;
+    private class ArrayListIterator<T> implements Iterator<T> {
+        private int index = 0;
 
-            @Override
-            public boolean hasNext() {
-                return index < size;
-            }
+        @Override
+        public boolean hasNext() {
+            return index < size;
+        }
 
-            //TODO:я не могу описать ситуацию в которой при которой возможен NoSuchElementException();?
-            @Override
-            public T next() {
-                if (!hasNext()) {
-                    throw new NoSuchElementException("Next element not exist");
-                }
-                return array[index++];
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException("Next element not exist");
             }
-        };
+            return (T) array[index++];
+        }
     }
 
 }

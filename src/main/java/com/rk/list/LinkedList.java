@@ -6,18 +6,13 @@ import java.util.Objects;
 
 public class LinkedList<T> extends AbstractList<T> implements List<T> {
     private Node<T> tail;
-    private Node<T> head;
-
-    @Override
-    public void add(T value) {
-        add(value, size);
-    }
+    protected Node<T> head;
 
     @Override
     public void add(T value, int index) {
         validateIndexForAdd(index);
-        Node<T> newNode = new Node<>();
-        newNode.value = value;
+        Node<T> newNode = new Node<>(value);
+
         if (size == 0) {
             tail = head = newNode;
         } else if (index == 0) {
@@ -29,11 +24,11 @@ public class LinkedList<T> extends AbstractList<T> implements List<T> {
             newNode.prev = tail;
             tail = newNode;
         } else {
-            Node<T> iterationNode = getNode(index);
-            iterationNode.prev.next = newNode;
-            newNode.prev = iterationNode.prev;
-            newNode.next = iterationNode;
-            iterationNode.prev = newNode;
+            Node<T> nodeToShift = getNode(index);
+            nodeToShift.prev.next = newNode;
+            newNode.prev = nodeToShift.prev;
+            newNode.next = nodeToShift;
+            nodeToShift.prev = newNode;
         }
         size++;
     }
@@ -41,7 +36,7 @@ public class LinkedList<T> extends AbstractList<T> implements List<T> {
     @Override
     public T remove(int index) {
         validateIndex(index);
-        Node<T> iterationNode = getNode(index);
+        Node<T> nodeToRemove = getNode(index);
         if (size == 1) {
             head = tail = null;
         } else if (index == 0) {
@@ -51,49 +46,49 @@ public class LinkedList<T> extends AbstractList<T> implements List<T> {
             tail.prev.next = null;
             tail = tail.prev;
         } else {
-            iterationNode.prev.next = iterationNode.next;
-            iterationNode.next.prev = iterationNode.prev;
+            nodeToRemove.prev.next = nodeToRemove.next;
+            nodeToRemove.next.prev = nodeToRemove.prev;
         }
         size--;
-        return iterationNode.value;
+        return nodeToRemove.value;
     }
 
     @Override
     public T get(int index) {
         validateIndex(index);
-        Node<T> iterationNode = getNode(index);
-        return iterationNode.value;
+        Node<T> node = getNode(index);
+        return node.value;
     }
 
     @Override
     public T set(T value, int index) {
         validateIndex(index);
-        Node<T> newNode = getNode(index);
-        T oldValue = newNode.value;
-        newNode.value = value;
+        Node<T> currentNode = getNode(index);
+        T oldValue = currentNode.value;
+        currentNode.value = value;
         return oldValue;
     }
 
     @Override
     public int indexOf(T value) {
-        int i = 0;
+        int index = 0;
         for (T object : this) {
             if (Objects.equals(value, object)) {
-                return i;
+                return index;
             }
-            i++;
+            index++;
         }
         return -1;
     }
 
     @Override
     public int lastIndexOf(T value) {
-        Node<T> iterationNode = tail;
-        for (int i = size - 1; i > 0; i--) {
-            if (Objects.equals(value, iterationNode.value)) {
-                return i;
+        Node<T> currentNode = tail;
+        for (int index = size - 1; index > 0; index--) {
+            if (Objects.equals(value, currentNode.value)) {
+                return index;
             }
-            iterationNode = iterationNode.prev;
+            currentNode = currentNode.prev;
         }
         return -1;
     }
@@ -106,46 +101,50 @@ public class LinkedList<T> extends AbstractList<T> implements List<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new Iterator<>() {
-            private Node<T> nodeIteration = head;
-
-            @Override
-            public boolean hasNext() {
-                return nodeIteration != null;
-            }
-
-            @Override
-            public T next() {
-                if (!hasNext()) {
-                    throw new NoSuchElementException("Next element not exist");
-                }
-                T value = nodeIteration.value;
-                nodeIteration = nodeIteration.next;
-                return value;
-            }
-        };
+        return new LinkedListIterator<>();
     }
 
-
     private Node<T> getNode(int index) {
-        Node<T> iterationNode = null;
+        Node<T> node;
         if (index <= size / 2) {
-            iterationNode = head;
+            node = head;
             for (int i = 0; i < index; i++) {
-                iterationNode = iterationNode.next;
+                node = node.next;
             }
-        } else if (index > size / 2) {
-            iterationNode = tail;
+        } else {
+            node = tail;
             for (int i = size - 1; i > index; i--) {
-                iterationNode = iterationNode.prev;
+                node = node.prev;
             }
         }
-        return iterationNode;
+        return node;
+    }
+
+    private class LinkedListIterator<T> implements Iterator<T> {
+        private Node<T> currentNode = (Node<T>) head;
+
+        @Override
+        public boolean hasNext() {
+            return currentNode != null;
+        }
+
+        @Override
+        public T next() {
+            if (!hasNext()) {
+                throw new NoSuchElementException("Next element not exist");
+            }
+            T value = currentNode.value;
+            currentNode = currentNode.next;
+            return value;
+        }
     }
 
     private static class Node<T> {
         private T value;
         private Node<T> prev;
         private Node<T> next;
+
+        public Node(T value) {
+        }
     }
 }
