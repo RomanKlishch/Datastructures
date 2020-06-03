@@ -18,7 +18,7 @@ public interface Map<K, V> extends Iterable<Map.Entry<K,V>>{
 
     boolean containsKey(K key);
 
-    static class Entry<K, V> {
+    class Entry<K, V> {
         private final K key;
         private final int hash;
 
@@ -26,7 +26,7 @@ public interface Map<K, V> extends Iterable<Map.Entry<K,V>>{
 
         public Entry(K key) {
             this.key = key;
-            this.hash = key == null ? 0 : key.hashCode();
+            this.hash = key == null ? 0 : Math.abs(key.hashCode());
         }
 
         public Entry(K key, V value) {

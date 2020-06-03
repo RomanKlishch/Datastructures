@@ -105,16 +105,16 @@ public class HashMapTest {
     }
 
     @Test
-    void putAllRepeatElement_shouldNotIncreaseSizeAndChangeValue() {
+    void putAllRepeatElement_shouldChangeValueAndNotIncreaseSize() {
         HashMap<Integer, Integer> newMap = new HashMap<>();
         newMap.put(10, 10);
         newMap.put(20, 20);
         newMap.put(30, 30);
         defaultMap.putAll(newMap);
         assertEquals(3, defaultMap.size());
-        assertEquals(1, defaultMap.get(10));
-        assertEquals(2, defaultMap.get(20));
-        assertEquals(3, defaultMap.get(30));
+        assertEquals(10, defaultMap.get(10));
+        assertEquals(20, defaultMap.get(20));
+        assertEquals(30, defaultMap.get(30));
     }
 
     @Test
