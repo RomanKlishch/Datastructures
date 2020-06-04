@@ -56,7 +56,6 @@ public class HashMap<K, V> implements Map<K, V> {
         if (buckets[bucketIndex] == null) {
             put(key, value);
         }
-
         Entry<K, V> entry = getEntry(buckets[bucketIndex], key, keyHash);
         if (entry != null) {
             return entry.getValue();
@@ -116,6 +115,8 @@ public class HashMap<K, V> implements Map<K, V> {
         return getEntry(buckets[bucketIndex], key, keyHash) != null;
     }
 
+    //TODO: наверное имеет смысл добавить еще две реализации итератора для Key и Value?
+    // Если это делать как правильнo (через implement Iterable<K>)?
     @Override
     public Iterator<Map.Entry<K, V>> iterator() {
         return new HashMapIterator();
@@ -173,6 +174,8 @@ public class HashMap<K, V> implements Map<K, V> {
             buckets = newBuckets;
         }
     }
+//TODO: HashMapIterator без дженериков(в первом варианте было HashMapIterator<k extend K, v extend V>),
+// у меня снова с ними проблема ,буду подтягивать
 
     private class HashMapIterator implements Iterator<Map.Entry<K, V>> {
         private int bucketIndex;
@@ -196,7 +199,7 @@ public class HashMap<K, V> implements Map<K, V> {
                 currentEntry = bucketIterator.next();
                 return currentEntry;
             }
-            if (!bucketIterator.hasNext()){
+            if (!bucketIterator.hasNext()) {
                 while (buckets[++bucketIndex] == null) {
                 }
                 bucketIterator = buckets[bucketIndex].iterator();
