@@ -74,7 +74,6 @@ public class HashMap<K, V> implements Map<K, V> {
         return entry != null ? entry.getValue() : null;
     }
 
-
     @Override
     public V remove(K key) {
         int bucketIndex = getBucketIndex(key);
@@ -117,10 +116,9 @@ public class HashMap<K, V> implements Map<K, V> {
         return getEntry(buckets[bucketIndex], key, keyHash) != null;
     }
 
-
     @Override
     public Iterator<Map.Entry<K, V>> iterator() {
-        return new HashMapIterator<>();
+        return new HashMapIterator();
     }
 
     private int hash(K key) {
@@ -176,10 +174,10 @@ public class HashMap<K, V> implements Map<K, V> {
         }
     }
 
-    private class HashMapIterator<K, V> implements Iterator<Map.Entry<K, V>> {
-        private int indexBuckets = 0;
-        private int indexList = 0;
-        private int count = 0;
+    private class HashMapIterator implements Iterator<Map.Entry<K, V>> {
+        private int bucketIndex;
+        private int count;
+        private Iterator<Entry<K, V>> bucketIterator;
 
         @Override
         public boolean hasNext() {
@@ -188,18 +186,27 @@ public class HashMap<K, V> implements Map<K, V> {
 
         @Override
         public Entry<K, V> next() {
-            while (indexBuckets < buckets.length) {
-                if (buckets[indexBuckets] != null && buckets[indexBuckets].size() != 0) {
-                    while (indexList < buckets[indexBuckets].size()) {
-                        count++;
-                        return (Entry<K, V>) buckets[indexBuckets].get(indexList++);
-                    }
-                    indexList = 0;
+            Entry<K, V> currentEntry;
+            if (bucketIterator == null) {
+                while (buckets[bucketIndex] == null) {
+                    bucketIndex++;
                 }
-                indexBuckets++;
+                bucketIterator = buckets[bucketIndex].iterator();
+                count++;
+                currentEntry = bucketIterator.next();
+                return currentEntry;
             }
-            return null;
+            if (!bucketIterator.hasNext()){
+                while (buckets[++bucketIndex] == null) {
+                }
+                bucketIterator = buckets[bucketIndex].iterator();
+                count++;
+                currentEntry = bucketIterator.next();
+                return currentEntry;
+            }
+            currentEntry = bucketIterator.next();
+            count++;
+            return currentEntry;
         }
     }
-
 }
