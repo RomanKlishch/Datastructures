@@ -4,9 +4,9 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class LinkedList<T> extends AbstractList<T> implements List<T> {
+public class LinkedList<T> extends AbstractList<T> {
     private Node<T> tail;
-    protected Node<T> head;
+    private Node<T> head;
 
     @Override
     public void add(T value, int index) {
@@ -101,7 +101,7 @@ public class LinkedList<T> extends AbstractList<T> implements List<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new LinkedListIterator<>();
+        return new LinkedListIterator();
     }
 
     private Node<T> getNode(int index) {
@@ -120,8 +120,10 @@ public class LinkedList<T> extends AbstractList<T> implements List<T> {
         return node;
     }
 
-    private class LinkedListIterator<T> implements Iterator<T> {
-        private Node<T> currentNode = (Node<T>) head;
+    private class LinkedListIterator implements Iterator<T> {
+        private Node<T> currentNode = head;
+        private Node<T> removeNode;
+        private int index;
 
         @Override
         public boolean hasNext() {
@@ -133,9 +135,29 @@ public class LinkedList<T> extends AbstractList<T> implements List<T> {
             if (!hasNext()) {
                 throw new NoSuchElementException("Next element not exist");
             }
+            index++;
+            removeNode = currentNode;
             T value = currentNode.value;
             currentNode = currentNode.next;
             return value;
+        }
+
+        @Override
+        public void remove() {
+//            LinkedList.this.remove(--index);
+            if (removeNode.prev == null && removeNode.next == null) {
+                head = tail = null;
+            } else if (removeNode.prev == null) {
+                head = removeNode.next;
+                removeNode.next.prev = null;
+            } else if (removeNode.next == null) {
+                tail = removeNode.prev;
+                removeNode.prev.next = null;
+            } else {
+                removeNode.prev.next = removeNode.next;
+                removeNode.next.prev = removeNode.prev;
+            }
+            size--;
         }
     }
 
@@ -145,6 +167,7 @@ public class LinkedList<T> extends AbstractList<T> implements List<T> {
         private Node<T> next;
 
         public Node(T value) {
+            this.value = value;
         }
     }
 }

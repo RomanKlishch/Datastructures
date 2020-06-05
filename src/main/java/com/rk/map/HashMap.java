@@ -174,8 +174,6 @@ public class HashMap<K, V> implements Map<K, V> {
             buckets = newBuckets;
         }
     }
-//TODO: HashMapIterator без дженериков(в первом варианте было HashMapIterator<k extend K, v extend V>),
-// у меня снова с ними проблема ,буду подтягивать
 
     private class HashMapIterator implements Iterator<Map.Entry<K, V>> {
         private int bucketIndex;

@@ -3,6 +3,9 @@ package com.rk.list;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.Iterator;
+import java.util.Objects;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 public abstract class AbstractListTest {
@@ -265,5 +268,47 @@ public abstract class AbstractListTest {
         }
         assertEquals("AnullC", allList.toString());
 
+    }
+
+    @Test
+    void iteratorRemoveLast_shouldRemoveElementAndReduceSize() {
+        Iterator<String> iterator = defaultList.iterator();
+        while (iterator.hasNext()) {
+            String s = iterator.next();
+            if (Objects.equals(s,"C")){
+                iterator.remove();
+            }
+        }
+        assertEquals(2,defaultList.size());
+        assertEquals("A", defaultList.get(0));
+        assertNull(defaultList.get(1));
+    }
+
+    @Test
+    void iteratorRemoveFirst_shouldRemoveElementAndReduceSize() {
+        Iterator<String> iterator = defaultList.iterator();
+        while (iterator.hasNext()) {
+            String s = iterator.next();
+            if (Objects.equals(s,"A")){
+                iterator.remove();
+            }
+        }
+        assertEquals(2,defaultList.size());
+        assertEquals("C", defaultList.get(1));
+        assertNull(defaultList.get(0));
+    }
+
+    @Test
+    void iteratorRemoveNull_shouldRemoveElementAndReduceSize() {
+        Iterator<String> iterator = defaultList.iterator();
+        while (iterator.hasNext()) {
+            String s = iterator.next();
+            if (Objects.equals(s,null)){
+                iterator.remove();
+            }
+        }
+        assertEquals(2,defaultList.size());
+        assertEquals("A", defaultList.get(0));
+        assertEquals("C", defaultList.get(1));
     }
 }

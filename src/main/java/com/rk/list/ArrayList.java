@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class ArrayList<T> extends AbstractList<T> implements List<T> {
+public class ArrayList<T> extends AbstractList<T>{
     private static final int DEFAULT_CAPACITY = 10;
     private T[] array;
 
@@ -80,7 +80,7 @@ public class ArrayList<T> extends AbstractList<T> implements List<T> {
 
     @Override
     public Iterator<T> iterator() {
-        return new ArrayListIterator<>();
+        return new ArrayListIterator();
     }
 
     @SuppressWarnings("uncheked")
@@ -96,7 +96,7 @@ public class ArrayList<T> extends AbstractList<T> implements List<T> {
         }
     }
 
-    private class ArrayListIterator<T> implements Iterator<T> {
+    private class ArrayListIterator implements Iterator<T> {
         private int index = 0;
 
         @Override
@@ -109,7 +109,12 @@ public class ArrayList<T> extends AbstractList<T> implements List<T> {
             if (!hasNext()) {
                 throw new NoSuchElementException("Next element not exist");
             }
-            return (T) array[index++];
+            return array[index++];
+        }
+
+        @Override
+        public void remove() {
+            ArrayList.this.remove(--index);
         }
     }
 
