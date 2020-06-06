@@ -4,7 +4,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.Objects;
 
-public class ArrayList<T> extends AbstractList<T>{
+public class ArrayList<T> extends AbstractList<T> {
     private static final int DEFAULT_CAPACITY = 10;
     private T[] array;
 

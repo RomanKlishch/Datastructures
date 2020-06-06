@@ -142,6 +142,7 @@ public class LinkedList<T> extends AbstractList<T> {
             return value;
         }
 
+        //Todo: я не использовал метод LinkedList.this.remove потому что он повторяет весь цикл итераций
         @Override
         public void remove() {
 //            LinkedList.this.remove(--index);

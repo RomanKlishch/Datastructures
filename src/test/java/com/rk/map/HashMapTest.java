@@ -166,15 +166,15 @@ public class HashMapTest {
     @Test
     void iterator_shouldIterateMap() {
         Map<Integer, Integer> mapForIteratorTest = new HashMap<>(20);
-        mapForIteratorTest.put(1,1);
-        mapForIteratorTest.put(21,2);
-        mapForIteratorTest.put(41,3);
-        mapForIteratorTest.put(30,4);
-        mapForIteratorTest.put(31,5);
-        mapForIteratorTest.put(32,6);
+        mapForIteratorTest.put(1, 1);
+        mapForIteratorTest.put(21, 2);
+        mapForIteratorTest.put(41, 3);
+        mapForIteratorTest.put(30, 4);
+        mapForIteratorTest.put(31, 5);
+        mapForIteratorTest.put(32, 6);
 
         StringBuilder allList = new StringBuilder();
-        for (Map.Entry<Integer,Integer> entry : mapForIteratorTest) {
+        for (Map.Entry<Integer, Integer> entry : mapForIteratorTest) {
             allList.append(entry.getValue());
         }
         assertEquals("123456", allList.toString());

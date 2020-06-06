@@ -275,11 +275,11 @@ public abstract class AbstractListTest {
         Iterator<String> iterator = defaultList.iterator();
         while (iterator.hasNext()) {
             String s = iterator.next();
-            if (Objects.equals(s,"C")){
+            if (Objects.equals(s, "C")) {
                 iterator.remove();
             }
         }
-        assertEquals(2,defaultList.size());
+        assertEquals(2, defaultList.size());
         assertEquals("A", defaultList.get(0));
         assertNull(defaultList.get(1));
     }
@@ -289,11 +289,11 @@ public abstract class AbstractListTest {
         Iterator<String> iterator = defaultList.iterator();
         while (iterator.hasNext()) {
             String s = iterator.next();
-            if (Objects.equals(s,"A")){
+            if (Objects.equals(s, "A")) {
                 iterator.remove();
             }
         }
-        assertEquals(2,defaultList.size());
+        assertEquals(2, defaultList.size());
         assertEquals("C", defaultList.get(1));
         assertNull(defaultList.get(0));
     }
@@ -303,11 +303,11 @@ public abstract class AbstractListTest {
         Iterator<String> iterator = defaultList.iterator();
         while (iterator.hasNext()) {
             String s = iterator.next();
-            if (Objects.equals(s,null)){
+            if (Objects.equals(s, null)) {
                 iterator.remove();
             }
         }
-        assertEquals(2,defaultList.size());
+        assertEquals(2, defaultList.size());
         assertEquals("A", defaultList.get(0));
         assertEquals("C", defaultList.get(1));
     }
