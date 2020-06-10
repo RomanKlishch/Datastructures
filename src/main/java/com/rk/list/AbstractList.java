@@ -37,14 +37,14 @@ public abstract class AbstractList<T> implements List<T> {
     protected void validateIndex(int index) {
         if (index < 0 || index >= size) {
             throw new IndexOutOfBoundsException(
-            );
+                    String.format("Index should be between 0 and size inclusive [ 0, %d), but was %d", size, index));
         }
     }
 
     protected void validateIndexForAdd(int index) {
         if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException(
-                    String.format("Index should be between 0 and size inclusive [ 0, %d), but was %d", size, index));
+                    String.format("Index should be between 0 and size exclusive [ 0, %d), but was %d", size, index));
         }
     }
 }

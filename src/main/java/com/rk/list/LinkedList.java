@@ -95,6 +95,13 @@ public class LinkedList<T> extends AbstractList<T> {
 
     @Override
     public void clear() {
+        for (Node<T> node = head; node != null; ) {
+            Node<T> nextNode = node.next;
+            node.prev = null;
+            node.next = null;
+            node.value = null;
+            node = nextNode;
+        }
         size = 0;
         tail = head = null;
     }
@@ -122,8 +129,7 @@ public class LinkedList<T> extends AbstractList<T> {
 
     private class LinkedListIterator implements Iterator<T> {
         private Node<T> currentNode = head;
-        private Node<T> removeNode;
-        private int index;
+        private Node<T> removedNode;
 
         @Override
         public boolean hasNext() {
@@ -135,28 +141,26 @@ public class LinkedList<T> extends AbstractList<T> {
             if (!hasNext()) {
                 throw new NoSuchElementException("Next element not exist");
             }
-            index++;
-            removeNode = currentNode;
+
+            removedNode = currentNode;
             T value = currentNode.value;
             currentNode = currentNode.next;
             return value;
         }
 
-        //Todo: я не использовал метод LinkedList.this.remove потому что он повторяет весь цикл итераций
         @Override
         public void remove() {
-//            LinkedList.this.remove(--index);
-            if (removeNode.prev == null && removeNode.next == null) {
+            if (removedNode.prev == null && removedNode.next == null) {
                 head = tail = null;
-            } else if (removeNode.prev == null) {
-                head = removeNode.next;
-                removeNode.next.prev = null;
-            } else if (removeNode.next == null) {
-                tail = removeNode.prev;
-                removeNode.prev.next = null;
+            } else if (removedNode.prev == null) {
+                head = removedNode.next;
+                removedNode.next.prev = null;
+            } else if (removedNode.next == null) {
+                tail = removedNode.prev;
+                removedNode.prev.next = null;
             } else {
-                removeNode.prev.next = removeNode.next;
-                removeNode.next.prev = removeNode.prev;
+                removedNode.prev.next = removedNode.next;
+                removedNode.next.prev = removedNode.prev;
             }
             size--;
         }
@@ -167,7 +171,7 @@ public class LinkedList<T> extends AbstractList<T> {
         private Node<T> prev;
         private Node<T> next;
 
-        public Node(T value) {
+        private Node(T value) {
             this.value = value;
         }
     }
