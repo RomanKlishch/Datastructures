@@ -76,7 +76,7 @@ public class HashMapTest {
 
     @Test
     void remove_shouldReturnRemovedValueAndReduceSize() {
-        assertEquals(1, defaultMap.remove(10));
+        assertEquals(2, defaultMap.remove(20));
         assertEquals(2, defaultMap.size());
     }
 

@@ -1,18 +1,16 @@
 package com.rk.map;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 public class HashMap<K, V> implements Map<K, V> {
-    private static final int DEFAULT_INITIAL_CAPACITY = 5;
+    private static final int DEFAULT_INITIAL_CAPACITY = 2;
     private static final double DEFAULT_LOAD_FACTORY = 0.75;
     private final double loadFactory;
 
-    private List<Entry>[] buckets;
+    private Entry<K, V>[] buckets;
     private int size;
-
 
     public HashMap() {
         this(DEFAULT_INITIAL_CAPACITY, DEFAULT_LOAD_FACTORY);
@@ -26,50 +24,69 @@ public class HashMap<K, V> implements Map<K, V> {
         if (initialCapacity <= 0) {
             throw new IllegalArgumentException(initialCapacity + " less then or equals 0");
         }
-        this.buckets = new List[initialCapacity];
+        this.buckets = new Entry[initialCapacity];
         this.loadFactory = loadFactory;
     }
 
     @Override
     public V put(K key, V value) {
         growIfNeeded();
-        Entry entry = getEntry(key);
-        if (entry != null) {
-            V oldValue = entry.getValue();
-            entry.setValue(value);
-            return oldValue;
-        }
-
-        Entry newEntry = new Entry(key, value);
         int bucketIndex = getBucketIndex(key);
-        createBucketIfNotExist(bucketIndex);
-        buckets[bucketIndex].add(newEntry);
+        Entry<K, V> newEntry = new Entry(key, value);
+
+        if (buckets[bucketIndex] == null) {
+            growIfNeeded();
+            buckets[bucketIndex] = newEntry;
+        } else {
+            Entry<K, V> oldEntry = buckets[bucketIndex];
+            while (oldEntry != null) {
+                if (isEntryEquals(key, newEntry.hash, oldEntry)) {
+                    V oldValue = oldEntry.value;
+                    oldEntry.value = value;
+                    return oldValue;
+                }
+                if (oldEntry.next == null) {
+                    growIfNeeded();
+                    oldEntry.next = newEntry;
+                    break;
+                }
+                oldEntry = oldEntry.next;
+            }
+        }
         size++;
         return value;
     }
 
-    //Todo: В прошлом видео ты удалил в методе putIfAbsent() последний else.
-// Он нужен для коректной работы первого  if(). Если в бакет равен нулл,
-// тогда мы точно знаем что такого Entry не существует
     @Override
     public V putIfAbsent(K key, V value) {
         int bucketIndex = getBucketIndex(key);
+        Entry<K, V> newEntry = new Entry(key, value);
 
         if (buckets[bucketIndex] == null) {
-            put(key, value);
-        }
-        Entry entry = getEntry(key);
-        if (entry != null) {
-            return entry.getValue();
+            growIfNeeded();
+            buckets[bucketIndex] = newEntry;
         } else {
-            put(key, value);
-            return value;
+            Entry<K, V> oldEntry = buckets[bucketIndex];
+            while (oldEntry != null) {
+                if (isEntryEquals(key, newEntry.hash, oldEntry)) {
+                    //TODO: putIfAbsent и put отличаются только этой строчкой.
+                    return oldEntry.value;
+                }
+                if (oldEntry.next == null) {
+                    growIfNeeded();
+                    oldEntry.next = newEntry;
+                    break;
+                }
+                oldEntry = oldEntry.next;
+            }
         }
+        size++;
+        return value;
     }
 
     @Override
     public V get(K key) {
-        Entry entry = getEntry(key);
+        Entry<K, V> entry = getEntry(key);
         return entry != null ? entry.getValue() : null;
     }
 
@@ -77,15 +94,18 @@ public class HashMap<K, V> implements Map<K, V> {
     public V remove(K key) {
         int bucketIndex = getBucketIndex(key);
         int keyHash = hash(key);
-        List<Entry> bucket = buckets[bucketIndex];
-
-        Iterator<Entry> iterator = bucket.iterator();
-        while (iterator.hasNext()) {
-            Entry entry = iterator.next();
-            if (isEntryEquals(key, keyHash, entry)) {
-                iterator.remove();
-                size--;
-                return entry.getValue();
+        Entry<K, V> bucket = buckets[bucketIndex];
+        if (bucket == null) {
+            return null;
+        } else {
+            Iterator<Map.Entry<K, V>> iterator = iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<K, V> entry = iterator.next();
+                //TODO: дженерики кастуем к Entry
+                if (isEntryEquals(key, keyHash, (Entry) entry)) {
+                    iterator.remove();
+                    return entry.getValue();
+                }
             }
         }
         return null;
@@ -118,39 +138,28 @@ public class HashMap<K, V> implements Map<K, V> {
         return new HashMapIterator();
     }
 
-    private int hash(K key) {
-        return key == null ? 0 : Math.abs(key.hashCode());
+    private static int hash(Object key) {
+        return key == null ? 0 : key.hashCode();
     }
 
-    //Todo: возможен один случай исключения - когда buckets.length=0(ошибка - деление на ноль).
-// При этом есть ли смысл создавать такую HashMap?
     private int getBucketIndex(K key) {
         return Math.abs(hash(key) % buckets.length);
     }
 
-    private int getBucketIndex(Entry entry, int customLength) {
-        return entry.getHash() % customLength;
-    }
-
-    private void createBucketIfNotExist(int bucketIndex) {
-        if (buckets[bucketIndex] == null) {
-            buckets[bucketIndex] = new ArrayList<>(1);
-        }
-    }
-
-    private boolean isEntryEquals(K key, int keyHash, Entry entry) {
+    private boolean isEntryEquals(K key, int keyHash, HashMap.Entry entry) {
         return entry.getHash() == keyHash && Objects.equals(entry.getKey(), key);
     }
 
-    private Entry getEntry(K key) {
+    private Entry<K, V> getEntry(K key) {
         int bucketIndex = getBucketIndex(key);
         int keyHash = hash(key);
-        if (buckets[bucketIndex] != null) {
-            for (Entry entry : buckets[bucketIndex]) {
-                if (isEntryEquals(key, keyHash, entry)) {
-                    return entry;
-                }
+        Entry<K, V> entry = buckets[bucketIndex];
+
+        while (entry != null) {
+            if (isEntryEquals(key, keyHash, entry)) {
+                return entry;
             }
+            entry = entry.next;
         }
         return null;
     }
@@ -158,32 +167,38 @@ public class HashMap<K, V> implements Map<K, V> {
     private void growIfNeeded() {
         if (size > buckets.length * loadFactory) {
             @SuppressWarnings("uncheced")
-            List<Entry>[] newBuckets = new List[((int) (buckets.length * 1.5) + 1)];
-
-            for (List<Entry> list : buckets) {
-                if (list != null) {
-
-                    for (Entry entry : list) {
-                        int bucketIndex = getBucketIndex(entry, newBuckets.length);
-                        if (newBuckets[bucketIndex] == null) {
-                            newBuckets[bucketIndex] = new ArrayList<>(1);
+            Entry<K, V>[] newBuckets = new Entry[((int) (buckets.length * 1.5) + 1)];
+            for (Entry<K, V> entry : buckets) {
+                if (entry!=null){
+                    int index = getBucketIndex(entry.getKey());
+                    if (newBuckets[index]==null){
+                        newBuckets[index] = entry;
+                    }else {
+                        Entry<K, V> prevEntry = newBuckets[index];
+                        while (prevEntry.next!=null){
+                            prevEntry = prevEntry.next;
                         }
-                        newBuckets[bucketIndex].add(entry);
+                        prevEntry.next = entry;
                     }
-
                 }
             }
-            buckets = newBuckets;
         }
     }
 
     private class HashMapIterator implements Iterator<Map.Entry<K, V>> {
-        private int bucketIndex;
+        private int nextBucketIndex;
+        private int currentBucketIndex;
+        private Entry<K, V> nextEntry;
+        private Entry<K, V> currentEntry;
+        private Entry<K, V> prevEntry;
         private int count;
-        private Iterator<Entry> bucketIterator;
 
         public HashMapIterator() {
-            iterateToNextBucket();
+            //TODO:Иначе если size==0 у нас будет NoSuchElementException в iterateToNextBucket();
+            if (size != 0) {
+                iterateToNextBucket();
+                nextEntry = buckets[nextBucketIndex];
+            }
         }
 
         @Override
@@ -192,32 +207,58 @@ public class HashMap<K, V> implements Map<K, V> {
         }
 
         @Override
-        public Entry next() {
-            if (!bucketIterator.hasNext()) {
-                bucketIndex++;
-                iterateToNextBucket();
+        public Entry<K, V> next() {
+            prevEntry = currentEntry;
+            currentEntry = nextEntry;
+            currentBucketIndex = nextBucketIndex;
+            if (++count < size) {
+                if (nextEntry.next == null) {
+                    nextBucketIndex++;
+                    iterateToNextBucket();
+                    nextEntry = buckets[nextBucketIndex];
+                } else {
+                    nextEntry = nextEntry.next;
+                }
             }
-            count++;
-            return bucketIterator.next();
+            return currentEntry;
+        }
+
+        @Override
+        public void remove() {
+            if (buckets[currentBucketIndex] == currentEntry && currentEntry.next == null) {
+                buckets[currentBucketIndex] = null;
+
+            } else if (buckets[currentBucketIndex] == currentEntry && currentEntry.next != null) {
+                buckets[currentBucketIndex] = currentEntry.next;
+            } else {
+                prevEntry.next = currentEntry.next;
+                currentEntry = null;
+            }
+            currentEntry = null;
+            size--;
         }
 
         private void iterateToNextBucket() {
-            while (buckets[bucketIndex] == null) {
-                bucketIndex++;
+            while (buckets[nextBucketIndex] == null) {
+                if (nextBucketIndex > buckets.length - 1) {
+                    //TODO: может лучше throw new IndexOutOfBoundsException("");
+                    throw new NoSuchElementException("Next element not exist");
+                }
+                nextBucketIndex++;
             }
-            bucketIterator = buckets[bucketIndex].iterator();
         }
     }
 
-    private class Entry implements Map.Entry<K, V> {
+    private class Entry<K, V> implements Map.Entry<K, V> {
         private final K key;
         private final int hash;
 
         private V value;
+        private Entry<K, V> next;
 
         public Entry(K key) {
             this.key = key;
-            this.hash = hash(key);
+            this.hash = HashMap.hash(key);
         }
 
         public Entry(K key, V value) {
@@ -230,17 +271,13 @@ public class HashMap<K, V> implements Map<K, V> {
             return key;
         }
 
-        public int getHash() {
-            return hash;
-        }
-
         @Override
         public V getValue() {
             return value;
         }
 
-        public void setValue(V value) {
-            this.value = value;
+        public int getHash() {
+            return hash;
         }
 
         @Override
