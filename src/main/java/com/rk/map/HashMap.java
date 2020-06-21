@@ -32,10 +32,9 @@ public class HashMap<K, V> implements Map<K, V> {
     public V put(K key, V value) {
         growIfNeeded();
         int bucketIndex = getBucketIndex(key);
-        Entry<K, V> newEntry = new Entry(key, value);
+        Entry<K, V> newEntry = new Entry<>(key, value);
 
         if (buckets[bucketIndex] == null) {
-            growIfNeeded();
             buckets[bucketIndex] = newEntry;
         } else {
             Entry<K, V> oldEntry = buckets[bucketIndex];
@@ -46,7 +45,6 @@ public class HashMap<K, V> implements Map<K, V> {
                     return oldValue;
                 }
                 if (oldEntry.next == null) {
-                    growIfNeeded();
                     oldEntry.next = newEntry;
                     break;
                 }
@@ -60,20 +58,17 @@ public class HashMap<K, V> implements Map<K, V> {
     @Override
     public V putIfAbsent(K key, V value) {
         int bucketIndex = getBucketIndex(key);
-        Entry<K, V> newEntry = new Entry(key, value);
-
+        Entry<K, V> newEntry = new Entry<>(key, value);
+        growIfNeeded();
         if (buckets[bucketIndex] == null) {
-            growIfNeeded();
             buckets[bucketIndex] = newEntry;
         } else {
             Entry<K, V> oldEntry = buckets[bucketIndex];
             while (oldEntry != null) {
                 if (isEntryEquals(key, newEntry.hash, oldEntry)) {
-                    //TODO: putIfAbsent и put отличаются только этой строчкой.
                     return oldEntry.value;
                 }
                 if (oldEntry.next == null) {
-                    growIfNeeded();
                     oldEntry.next = newEntry;
                     break;
                 }
@@ -101,8 +96,7 @@ public class HashMap<K, V> implements Map<K, V> {
             Iterator<Map.Entry<K, V>> iterator = iterator();
             while (iterator.hasNext()) {
                 Map.Entry<K, V> entry = iterator.next();
-                //TODO: дженерики кастуем к Entry
-                if (isEntryEquals(key, keyHash, (Entry) entry)) {
+                if (isEntryEquals(key, keyHash, (Entry<K, V>) entry)) {
                     iterator.remove();
                     return entry.getValue();
                 }
@@ -146,7 +140,7 @@ public class HashMap<K, V> implements Map<K, V> {
         return Math.abs(hash(key) % buckets.length);
     }
 
-    private boolean isEntryEquals(K key, int keyHash, HashMap.Entry entry) {
+    private boolean isEntryEquals(K key, int keyHash, HashMap.Entry<K,V> entry) {
         return entry.getHash() == keyHash && Objects.equals(entry.getKey(), key);
     }
 
@@ -194,7 +188,6 @@ public class HashMap<K, V> implements Map<K, V> {
         private int count;
 
         public HashMapIterator() {
-            //TODO:Иначе если size==0 у нас будет NoSuchElementException в iterateToNextBucket();
             if (size != 0) {
                 iterateToNextBucket();
                 nextEntry = buckets[nextBucketIndex];
@@ -241,7 +234,6 @@ public class HashMap<K, V> implements Map<K, V> {
         private void iterateToNextBucket() {
             while (buckets[nextBucketIndex] == null) {
                 if (nextBucketIndex > buckets.length - 1) {
-                    //TODO: может лучше throw new IndexOutOfBoundsException("");
                     throw new NoSuchElementException("Next element not exist");
                 }
                 nextBucketIndex++;
@@ -249,7 +241,7 @@ public class HashMap<K, V> implements Map<K, V> {
         }
     }
 
-    private class Entry<K, V> implements Map.Entry<K, V> {
+    private static class Entry<K, V> implements Map.Entry<K, V> {
         private final K key;
         private final int hash;
 
